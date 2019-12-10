@@ -71,12 +71,12 @@ impl Tatami {
             }
             let mut k = 1;
             let mut l = 1;
-            
+/*            
             for i in 0..=self.factors.fmax {
                 k *= self.factors.p[i].pow(self.z[i] as u32);
                 l *= self.factors.p[i].pow(self.factors.n[i] as u32 - self.z[i] as u32);
             }
-/*
+*/
             let fmax = self.factors.fmax;
             for ((p, n), z) in self.factors.p[0..=fmax]
                 .iter()
@@ -86,7 +86,6 @@ impl Tatami {
                 k *= p.pow(*z as u32);
                 l *= p.pow(*n as u32 - *z as u32);
             }
-*/
 
             if k <= l {
                 r += self.free(k, l) as i64;
