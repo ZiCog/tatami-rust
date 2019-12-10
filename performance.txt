@@ -1,0 +1,75 @@
+On the Pi 3B
+------------
+
+limited.c
+---------
+
+On the Pi 3B
+------------
+
+Compiler.   Options.                        Seconds     Seconds
+                                            (32 bit)    (64 bit)
+
+clang                                       5.09        4.06
+
+clang       -march=native -mtune=native     4.36        4.02
+
+gcc                                         4.57        4.34
+
+gcc         -march=native -mtune=native     3.59        4.34
+
+rustc                                       6.86        4.76       
+
+On the PC
+---------
+
+Compiler.   Options.                        Seconds
+
+clang                                       0.90
+
+clang       -march=native -mtune=native     0.73
+
+gcc                                         0.87
+
+gcc         -march=native -mtune=native     0.90
+
+rustc                                       0.62
+
+
+-----------------------------------------------------------------
+
+prune (.c vs .rs)
+
+On the x86-64 PC
+----------------
+
+gcc         -march=native -mtune=native     4m43s
+
+rustc                                       4m43s  Yay! Neck and neck.
+
+On the Pi 3B (64 bit) 
+---------------------
+
+gcc         -march=native -mtune=native     21m55s
+
+rustc                                       24m46s Boo! A tad slow.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
