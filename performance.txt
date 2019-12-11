@@ -47,14 +47,18 @@ gcc         -march=native -mtune=native     4m43s
 
 rustc                                       4m43s  Yay! Neck and neck.
 
+Loop style       : Debug                    155m 11s
+Functional style : Debug                    143m 28s
+
+
+
+
 On the Pi 3B (64 bit) 
 ---------------------
 
 gcc         -march=native -mtune=native     21m55s
 
 rustc                                       24m46s Boo! A tad slow.
-
-
 
 
 
