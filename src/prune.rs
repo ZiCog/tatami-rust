@@ -48,8 +48,9 @@ impl Tatami {
 
     fn sigma(&mut self) -> i64 {
         let mut r = self.factors.n[0];
-        for i in 1..=self.factors.fmax {
-            r *= self.factors.n[i] + 1;
+        let fmax = self.factors.fmax;
+        for n in self.factors.n[1..=fmax].iter_mut() {
+            r *= *n + 1;
         }
         r
     }
@@ -57,22 +58,26 @@ impl Tatami {
     fn t(&mut self) -> i64 {
         let mut r = 0;
         loop {
+            let fmax = self.factors.fmax;
             let mut found: bool = false;
-            for i in 0..=self.factors.fmax {
-                if self.z[i] < self.factors.n[i] {
-                    self.z[i] += 1;
+            for (z, n) in self.z[0..=fmax]
+                .iter_mut()
+                .zip(&self.factors.n[0..=fmax])
+            {
+                if *z < *n {
+                    *z += 1;
                     found = true;
                     break;
                 }
-                self.z[i] = 0;
+                *z = 0;
             }
+
             if !found {
                 break;
             }
             let mut k = 1;
             let mut l = 1;
 
-            let fmax = self.factors.fmax;
             for ((p, n), z) in self.factors.p[0..=fmax]
                 .iter()
                 .zip(&self.factors.n[0..=fmax])
@@ -110,6 +115,8 @@ impl Tatami {
         }
         fmax += 1;
         self.factors.n[fmax] = 1;
+
+///*
         for j in i + 1..PNUM {
             p = PR[j];
             if p > pmax {
@@ -121,6 +128,22 @@ impl Tatami {
             self.factors.fmax = fmax;
             self.work();
         }
+
+//*/
+/* This dose not work yet...
+        for (j, prime) in PR[(i + 1)..PNUM].iter().enumerate() {
+            p = *prime;
+            if prime > pmax {
+                break;
+            }
+            self.factors.p[fmax] = *prime;
+            self.factors.s = s * prime;
+            self.factors.i = j;
+            self.factors.fmax = fmax;
+            self.work();
+        }
+*/
+
         self.factors.n[fmax] = 0;
     }
 
