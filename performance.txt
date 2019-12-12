@@ -45,14 +45,7 @@ On the x86-64 PC
 
 gcc         -march=native -mtune=native     4m43s
 
-rustc                                       4m43s  Yay! Neck and neck.
-                                            4m39s  Yay! Moved into the lead.
-
-Loop style       : Debug                    155m 11s
-Functional style : Debug                    143m 28s
-
-
-
+rustc                                       4m42s
 
 On the Pi 3B (64 bit) 
 ---------------------

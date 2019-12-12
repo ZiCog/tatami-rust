@@ -20,6 +20,7 @@ fn main() {
     let dest_path = Path::new(&out_dir).join("prime.rs");
     let mut f = File::create(&dest_path).unwrap();
 
+    f.write(b"#[allow(clippy::unreadable_literal)]\n").unwrap();
     f.write(b"pub static PR: [i64; 40_000] = [\n").unwrap();
     for i in 0..primes.primes.len() {
         f.write(b"    ").unwrap();
