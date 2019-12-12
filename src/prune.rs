@@ -113,6 +113,9 @@ impl Tatami {
         fmax += 1;
         self.factors.n[fmax] = 1;
 
+        // Clippy said do this, which is not only ugly but much slower.
+        // for (j, p) in PR.iter().enumerate().take(PNUM).skip(i + 1) {
+        // for (j, p) in PR.iter().enumerate().skip(i + 1) {
         for j in i + 1..PNUM {
             p = PR[j];
             if p > pmax {
