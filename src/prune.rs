@@ -3,9 +3,9 @@ use crate::constants::{FNUM, PNUM, SMAX};
 include!(concat!(env!("OUT_DIR"), "/prime.rs"));
 
 pub struct Factors {
-    s: i64,
-    fmax: usize,
-    i: usize,
+    //s: i64,
+    //fmax: usize,
+    //i: usize,
     p: Vec<i64>,
     n: Vec<i64>,
 }
@@ -13,9 +13,9 @@ pub struct Factors {
 impl Factors {
     fn new(size: usize) -> Factors {
         Factors {
-            s: 2,
-            fmax: 0,
-            i: 0,
+            //s: 2,
+            //fmax: 0,
+            //i: 0,
             p: vec![0; size],
             n: vec![0; size],
         }
@@ -27,6 +27,9 @@ pub struct Tatami {
     factors: Factors,
     smin: i64,
     z: Vec<i64>,
+    fs: i64,
+    fi: usize,
+    fmax: usize,
 }
 
 impl Tatami {
@@ -36,6 +39,9 @@ impl Tatami {
             factors: Factors::new(FNUM),
             smin: SMAX,
             z: vec![0; FNUM],
+            fs: 2,
+            fi: 0,
+            fmax: 0,
         }
     }
 
@@ -48,7 +54,7 @@ impl Tatami {
 
     fn sigma(&mut self) -> i64 {
         let mut r = self.factors.n[0];
-        let fmax = self.factors.fmax;
+        let fmax = self.fmax;
         for n in self.factors.n[1..=fmax].iter_mut() {
             r *= *n + 1;
         }
@@ -58,7 +64,7 @@ impl Tatami {
     fn t(&mut self) -> i64 {
         let mut r = 0;
         loop {
-            let fmax = self.factors.fmax;
+            let fmax = self.fmax;
             let mut found: bool = false;
             for (z, n) in self.z[0..=fmax]
                 .iter_mut()
@@ -95,7 +101,7 @@ impl Tatami {
     }
 
     fn work(&mut self) {
-        let s = self.factors.s;
+        let s = self.fs;
         let mut r = self.sigma();
         if r >= self.isn {
             r = self.t();
@@ -103,13 +109,13 @@ impl Tatami {
                 self.smin = s;
             }
         }
-        let i = self.factors.i;
-        let mut fmax = self.factors.fmax;
+        let i = self.fi;
+        let mut fmax = self.fmax;
         let pmax = self.smin / s + 1;
         let mut p = PR[i];
         if p <= pmax {
             self.factors.n[fmax] += 1;
-            self.factors.s = s * p;
+            self.fs = s * p;
             self.work();
             self.factors.n[fmax] -= 1;
         }
@@ -123,9 +129,9 @@ impl Tatami {
                 break;
             }
             self.factors.p[fmax] = p;
-            self.factors.s = s * p;
-            self.factors.i = j;
-            self.factors.fmax = fmax;
+            self.fs = s * p;
+            self.fi = j;
+            self.fmax = fmax;
             self.work();
         }
 
@@ -152,9 +158,9 @@ impl Tatami {
         self.factors = Factors::new(FNUM);
         self.factors.p[0] = PR[0];
         self.factors.n[0] = 1;
-        self.factors.i = 0;
-        self.factors.s = 2;
-        self.factors.fmax = 0;
+//        self.fi = 0;
+//        self.fs = 2;
+//        self.factors.fmax = 0;
         self.work();
         if self.smin < SMAX {
             self.smin
