@@ -45,8 +45,9 @@ On the x86-64 PC
 
 gcc         -march=native -mtune=native     4m43s
 
-rustc                                       4m42s
-
+rustc                                       4m42s   C style loop.       : Commmit 142...b07e)
+                                            4m48s   While .. Some loop  : 
+                                            
 On the Pi 3B (64 bit) 
 ---------------------
 

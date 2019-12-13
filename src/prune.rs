@@ -1,4 +1,5 @@
 use crate::constants::{FNUM, PNUM, SMAX};
+use std::slice::Iter;
 
 include!(concat!(env!("OUT_DIR"), "/prime.rs"));
 
@@ -22,7 +23,6 @@ pub struct Tatami {
     smin: i64,
     z: Vec<i64>,
     s: i64,
-    i: usize,
     fmax: usize,
 }
 
@@ -34,7 +34,6 @@ impl Tatami {
             smin: SMAX,
             z: vec![0; FNUM],
             s: 2,
-            i: 0,
             fmax: 0,
         }
     }
@@ -91,7 +90,7 @@ impl Tatami {
         r
     }
 
-    fn work(&mut self) {
+    fn work(&mut self, p: i64, mut pr: Iter<'_, i64>) {
         let s = self.s;
         let mut r = self.sigma();
         if r >= self.isn {
@@ -100,33 +99,24 @@ impl Tatami {
                 self.smin = s;
             }
         }
-        let i = self.i;
         let mut fmax = self.fmax;
         let pmax = self.smin / s + 1;
-        let mut p = PR[i];
         if p <= pmax {
             self.factors.n[fmax] += 1;
             self.s = s * p;
-            self.work();
+            self.work(p, pr.clone());
             self.factors.n[fmax] -= 1;
         }
         fmax += 1;
         self.factors.n[fmax] = 1;
-
-        // Clippy said do this, which is not only ugly but much slower.
-        // for (j, p) in PR.iter().enumerate().take(PNUM).skip(i + 1) {
-        // for (j, p) in PR.iter().enumerate().skip(i + 1) {
-        #[allow(clippy::needless_range_loop)]
-        for j in i + 1..PNUM {
-            p = PR[j];
+        while let Some(&p) = pr.next() {
             if p > pmax {
                 break;
             }
             self.factors.p[fmax] = p;
             self.s = s * p;
-            self.i = j;
             self.fmax = fmax;
-            self.work();
+            self.work(p, pr.clone());
         }
         self.factors.n[fmax] = 0;
     }
@@ -136,7 +126,7 @@ impl Tatami {
         self.factors = Factors::new(FNUM);
         self.factors.p[0] = PR[0];
         self.factors.n[0] = 1;
-        self.work();
+        self.work(PR[0], PR[1..].iter());
         if self.smin < SMAX {
             self.smin
         } else {
