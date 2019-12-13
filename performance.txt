@@ -45,15 +45,16 @@ On the x86-64 PC
 
 gcc         -march=native -mtune=native     4m43s
 
-rustc                                       4m42s   C style loop.       : Commmit 142...b07e)
-                                            4m48s   While .. Some loop  : 
-                                            
+rustc                                       4m42s   C style loop.       : Commmit 1423...b07e)
+                                            4m48s   While..Some loop    : Commmit db1d...48ea)
+
 On the Pi 3B (64 bit) 
 ---------------------
 
 gcc         -march=native -mtune=native     21m55s
 
-rustc                                       24m30s Boo! A tad slow.
+rustc                                       24m30s C style loop.       : Commmit 1423...b07e)
+                                            24m38s While..Some loop    : Commmit db1d...48ea)
 
 
 
