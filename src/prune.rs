@@ -1,4 +1,4 @@
-use crate::constants::{FNUM, PNUM, SMAX};
+use crate::constants::{FNUM, SMAX};
 use std::slice::Iter;
 
 include!(concat!(env!("OUT_DIR"), "/prime.rs"));
