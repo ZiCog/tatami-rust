@@ -1,11 +1,14 @@
 mod constants;
 mod prune;
+mod error;
 
 use prune::Tatami;
 
 fn main() {
     let n = 1000;
     let mut tatami = Tatami::new();
-    let result = tatami.inv(n);
-    println!("T({})={}", result, n);
+    match tatami.inv(n) {
+        Ok(result) => println!("T({})={}", result, n),
+        Err(e) => println!("{}", e),
+    }
 }

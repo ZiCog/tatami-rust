@@ -1,5 +1,6 @@
 use crate::constants::{FNUM, SMAX};
 use std::slice::Iter;
+use crate::error::TatamiError;
 
 include!(concat!(env!("OUT_DIR"), "/prime.rs"));
 
@@ -90,7 +91,7 @@ impl Tatami {
         r
     }
 
-    fn work(&mut self, p: i64, mut pr: Iter<'_, i64>) {
+    fn work(&mut self, p: i64, mut pr: Iter<i64>) {
         let s = self.s;
         let mut r = self.sigma();
         if r >= self.isn {
@@ -121,16 +122,16 @@ impl Tatami {
         self.factors.n[fmax] = 0;
     }
 
-    pub fn inv(&mut self, n: i64) -> i64 {
+    pub fn inv(&mut self, n: i64) -> Result<i64, TatamiError> {
         self.isn = n;
         self.factors = Factors::new(FNUM);
         self.factors.p[0] = PR[0];
         self.factors.n[0] = 1;
         self.work(PR[0], PR[1..].iter());
         if self.smin < SMAX {
-            self.smin
+            Ok(self.smin)
         } else {
-            -1
+            Err(TatamiError::new("borked"))
         }
     }
 }
