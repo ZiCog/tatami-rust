@@ -13,7 +13,6 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
-
 //type Int = i64;
 //const PNUM: usize = 40_000;
 //const SMAX: Int = 100_000_000_000;
@@ -23,8 +22,6 @@ type Int = i32;
 const PNUM: usize = 1_300;
 const SMAX: Int = 100_000_000;
 const FNUM: usize = 10;
-
-
 
 fn main() {
     let primes = Primes::new(PNUM);
