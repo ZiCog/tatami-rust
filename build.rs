@@ -29,6 +29,25 @@ const FNUM: usize = 10;
 fn main() {
     let primes = Primes::new(PNUM);
 
+    if let Some(last) = primes.primes.last() {
+        if *last as Int <= SMAX / *last as Int + 1 {
+            panic!("The maximum prime {} is too small!", last);
+        }
+    }
+
+    let mut r: Int = 1;
+    let mut ok = false;
+    for i in 0..(FNUM - 1) {
+        if primes.primes[i] as Int > SMAX / r + 1 {
+            println!("Pr{}={:?}", PNUM, primes.primes[PNUM - 1]);
+            ok = true;
+        }
+        r *= primes.primes[i] as Int;
+    }
+    if !ok {
+        panic!("Distinct primes {} in factorisation too few!", FNUM);
+    }
+
     let out_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("constants.rs");
     let mut f = File::create(&dest_path).unwrap();
@@ -38,7 +57,6 @@ fn main() {
     } else {
         f.write(b"type Int = i64;\n").unwrap();
     }
-
 
     f.write(b"#[allow(clippy::unreadable_literal)]\n").unwrap();
     f.write(format!("const SMAX: Int = {};\n", SMAX).as_bytes()).unwrap();
@@ -50,23 +68,4 @@ fn main() {
         f.write(b",\n").unwrap();
     }
     f.write(b"];\n").unwrap();
-
-
-
-/*
-    if p <= SMAX / p + 1 {
-        panic!("The maximum prime {} is too small!", p);
-    }
-
-    r = 1;
-    for i in 0..(FNUM - 1) {
-        if primes.primes[i] > SMAX / r + 1 {
-            println!("Pr{}={:?}", PNUM, primes.primes[PNUM - 1]);
-            return primes;
-        }
-        r *= primes.primes[i];
-    }
-    panic!("Distinct primes {} in factorisation too few!", FNUM);
-*/
-
 }
