@@ -1,12 +1,11 @@
-use crate::constants::{FNUM, SMAX};
 use std::slice::Iter;
 use crate::error::TatamiError;
 
-include!(concat!(env!("OUT_DIR"), "/prime.rs"));
+include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
 pub struct Factors {
-    p: Vec<i64>,
-    n: Vec<i64>,
+    p: Vec<Int>,
+    n: Vec<Int>,
 }
 
 impl Factors {
@@ -19,11 +18,11 @@ impl Factors {
 }
 
 pub struct Tatami {
-    isn: i64,
+    isn: Int,
     factors: Factors,
-    smin: i64,
-    z: Vec<i64>,
-    s: i64,
+    smin: Int,
+    z: Vec<Int>,
+    s: Int,
     fmax: usize,
 }
 
@@ -39,14 +38,14 @@ impl Tatami {
         }
     }
 
-    fn free(&mut self, k: i64, l: i64) -> bool {
-        let n: i64 = l / k;
-        let lmin: i64 = (k + 1) * n + 2;
-        let lmax: i64 = (k - 1) * (n + 1) - 2;
+    fn free(&mut self, k: Int, l: Int) -> bool {
+        let n: Int = l / k;
+        let lmin: Int = (k + 1) * n + 2;
+        let lmax: Int = (k - 1) * (n + 1) - 2;
         (lmin <= l) && (l <= lmax)
     }
 
-    fn sigma(&mut self) -> i64 {
+    fn sigma(&mut self) -> Int {
         let mut r = self.factors.n[0];
         let fmax = self.fmax;
         for n in self.factors.n[1..=fmax].iter_mut() {
@@ -55,7 +54,7 @@ impl Tatami {
         r
     }
 
-    fn t(&mut self) -> i64 {
+    fn t(&mut self) -> Int {
         let mut r = 0;
         loop {
             let fmax = self.fmax;
@@ -85,13 +84,13 @@ impl Tatami {
             }
 
             if k <= l {
-                r += self.free(k, l) as i64;
+                r += self.free(k, l) as Int;
             }
         }
         r
     }
 
-    fn work(&mut self, p: i64, mut pr: Iter<i64>) {
+    fn work(&mut self, p: Int, mut pr: Iter<Int>) {
         let s = self.s;
         let mut r = self.sigma();
         if r >= self.isn {
@@ -122,7 +121,7 @@ impl Tatami {
         self.factors.n[fmax] = 0;
     }
 
-    pub fn inv(&mut self, n: i64) -> Result<i64, TatamiError> {
+    pub fn inv(&mut self, n: Int) -> Result<Int, TatamiError> {
         self.isn = n;
         self.factors = Factors::new(FNUM);
         self.factors.p[0] = PR[0];

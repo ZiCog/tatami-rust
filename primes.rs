@@ -2,20 +2,18 @@
 //
 // Derived from E.J.Olsen's wheel.c
 //
-use crate::constants::{FNUM, PNUM, SMAX};
 
 pub struct Primes {
     pub primes: Vec<i64>,
 }
 
 impl Primes {
-    pub fn new() -> Primes {
+    pub fn new(n: usize) -> Primes {
         let mut primes = Primes {
-            primes: vec![0; PNUM],
+            primes: vec![0; n],
         };
 
         let mut p: i64;
-        let mut r: i64;
         primes.primes[0] = 2;
         primes.primes[1] = 3;
         let mut pn: usize = 2;
@@ -39,7 +37,7 @@ impl Primes {
         }
 
         p = 5;
-        while pn < PNUM {
+        while pn < primes.primes.len() {
             if isprime(p, &mut in_, &primes.primes) {
                 primes.primes[pn] = p;
                 pn += 1;
@@ -47,18 +45,6 @@ impl Primes {
             p += 2;
         }
 
-        if p <= SMAX / p + 1 {
-            panic!("The maximum prime {} is too small!", p);
-        }
-
-        r = 1;
-        for i in 0..(FNUM - 1) {
-            if primes.primes[i] > SMAX / r + 1 {
-                println!("Pr{}={:?}", PNUM, primes.primes[PNUM - 1]);
-                return primes;
-            }
-            r *= primes.primes[i];
-        }
-        panic!("Distinct primes {} in factorisation too few!", FNUM);
+        primes
     }
 }
