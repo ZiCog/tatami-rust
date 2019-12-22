@@ -13,22 +13,20 @@ use std::io::Write;
 use std::path::Path;
 
 #[cfg(feature="use_i32")]
-type Int = i32;
-#[cfg(feature="use_i32")]
-const PNUM: usize = 1_300;
-#[cfg(feature="use_i32")]
-const SMAX: Int = 100_000_000;
-#[cfg(feature="use_i32")]
-const FNUM: usize = 10;
-
+mod defs {
+    pub type Int = i32;
+    pub const PNUM: usize = 1_300;
+    pub const SMAX: Int = 100_000_000;
+    pub const FNUM: usize = 10;
+}
 #[cfg(feature="use_i64")]
-type Int = i64;
-#[cfg(feature="use_i64")]
-const PNUM: usize = 40_000;
-#[cfg(feature="use_i64")]
-const SMAX: Int = 100_000_000_000;
-#[cfg(feature="use_i64")]
-const FNUM: usize = 20;
+mod defs {
+    pub type Int = i64;
+    pub const PNUM: usize = 40_000;
+    pub const SMAX: Int = 100_000_000_000;
+    pub const FNUM: usize = 20;
+}
+use defs::{Int, PNUM, SMAX, FNUM};
 
 fn main() {
     let primes = Primes::new(PNUM);
