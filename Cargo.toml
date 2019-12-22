@@ -10,5 +10,12 @@ build = "build.rs"
 [dependencies]
 time = "*"
 
+[features]
+# Select use of i32 or i64 as iteger type
+use_i64 = []
+use_i32 = []
+
+
+
 [profile.release]
 #overflow-checks = true

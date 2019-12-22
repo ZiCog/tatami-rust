@@ -1,9 +1,8 @@
 // build.rs
 //
-// Generates a global constant array of prime numbers.
+// Generates constants.rs containing type and constant definitions.
 //
 use crate::primes::Primes;
-
 
 mod primes;
 
@@ -13,15 +12,23 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
-//type Int = i64;
-//const PNUM: usize = 40_000;
-//const SMAX: Int = 100_000_000_000;
-//const FNUM: usize = 20;
-
+#[cfg(feature="use_i32")]
 type Int = i32;
+#[cfg(feature="use_i32")]
 const PNUM: usize = 1_300;
+#[cfg(feature="use_i32")]
 const SMAX: Int = 100_000_000;
+#[cfg(feature="use_i32")]
 const FNUM: usize = 10;
+
+#[cfg(feature="use_i64")]
+type Int = i64;
+#[cfg(feature="use_i64")]
+const PNUM: usize = 40_000;
+#[cfg(feature="use_i64")]
+const SMAX: Int = 100_000_000_000;
+#[cfg(feature="use_i64")]
+const FNUM: usize = 20;
 
 fn main() {
     let primes = Primes::new(PNUM);
