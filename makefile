@@ -1,3 +1,5 @@
+CC=clang
+
 run: all
 	time ./limited
 	time ./prune
@@ -10,10 +12,10 @@ target/release/tatami_rust: Cargo.toml build.rs primes.rs
 
 
 prune: prune.c
-	gcc -Wall -O3 -o prune prune.c -march=native -mtune=native
+	$(CC) -Wall -O3 -o prune prune.c -march=native -mtune=native
 
 limited: limited.c
-	gcc -Wall -O3 -o limited limited.c -march=native -mtune=native
+	$(CC) -Wall -O3 -o limited limited.c -march=native -mtune=native
 
 
 clean:
