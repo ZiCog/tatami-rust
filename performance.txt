@@ -63,7 +63,7 @@ rustc       -C opt-level=3 -C debuginfo=0 -C target-cpu=native  24m32s While..So
 
 
 
-
+# On the Pi 3B - 64 bit
 pi@debian-buster-64:~/tatami-rust $ make run
 gcc -Wall -O3 -o prune prune.c -march=native -mtune=native
 gcc -Wall -O3 -o limited limited.c -march=native -mtune=native
@@ -88,14 +88,32 @@ T(85765680)=200
 4.04user 0.00system 0:04.04elapsed 99%CPU (0avgtext+0avgdata 1528maxresident)k
 0inputs+0outputs (0major+85minor)pagefaults 0swaps
 
-
-
-
-
-
-
-
-
+# On the PC - x86-64
+heater@monster:/mnt/c/Users/heater/tatami-rust$ make run
+gcc -Wall -O3 -o prune prune.c -march=native -mtune=native
+gcc -Wall -O3 -o limited limited.c -march=native -mtune=native
+RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
+   Compiling libc v0.2.66
+   Compiling tatami_rust v0.1.0 (/mnt/c/Users/heater/tatami-rust)
+   Compiling time v0.1.42
+    Finished release [optimized] target(s) in 6.02s
+time ./limited
+T(85765680)=200
+0.90user 0.01system 0:00.92elapsed 100%CPU (0avgtext+0avgdata 584maxresident)k
+0inputs+0outputs (0major+175minor)pagefaults 0swaps
+time ./prune
+Pr(1300)=10657
+T(85765680)=200
+0.81user 0.00system 0:00.83elapsed 96%CPU (0avgtext+0avgdata 584maxresident)k
+0inputs+0outputs (0major+177minor)pagefaults 0swaps
+time ./target/release/tatami_rust 200
+Using 32 bit integers.
+PNUM = 1300
+FNUM = 10
+SMAX = 100000000
+T(85765680)=200
+0.60user 0.00system 0:00.64elapsed 94%CPU (0avgtext+0avgdata 876maxresident)k
+0inputs+0outputs (0major+257minor)pagefaults 0swaps
 
 
 

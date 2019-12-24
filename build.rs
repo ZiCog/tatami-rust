@@ -66,7 +66,7 @@ fn main() {
     f.write(format!("pub static PR: [Int; {}] = [\n", PNUM).as_bytes()).unwrap();
     for i in 0..primes.primes.len() {
         f.write(b"    ").unwrap();
-        f.write(&primes.primes[i].to_string().into_bytes()).unwrap();
+        f.write(format!("{}", primes.primes[i]).as_bytes()).unwrap();
         f.write(b",\n").unwrap();
     }
     f.write(b"];\n").unwrap();

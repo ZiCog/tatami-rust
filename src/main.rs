@@ -18,6 +18,9 @@ fn main() {
     println!("FNUM = {}", FNUM);
     println!("SMAX = {}", SMAX);
 
+    println!("Pr({})={}", PR.len(), PR.last().unwrap());
+
+
     if let Ok(n) = args[1].parse::<Int>() {
         let mut tatami = Tatami::new();
         match tatami.inv(n) {
