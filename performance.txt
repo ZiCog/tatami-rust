@@ -115,5 +115,58 @@ T(85765680)=200
 0.60user 0.00system 0:00.64elapsed 94%CPU (0avgtext+0avgdata 876maxresident)k
 0inputs+0outputs (0major+257minor)pagefaults 0swaps
 
+Using clang....
 
+On the PC:
+
+$ make
+clang -Wall -O3 -o prune prune.c -march=native -mtune=native
+clang -Wall -O3 -o limited limited.c -march=native -mtune=native
+RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
+   Compiling tatami_rust v0.1.0 (/mnt/c/Users/michael/tatami-rust)
+    Finished release [optimized] target(s) in 1.26s
+time ./limited
+T(85765680)=200
+0.71user 0.00system 0:00.73elapsed 98%CPU (0avgtext+0avgdata 584maxresident)k
+0inputs+0outputs (0major+177minor)pagefaults 0swaps
+time ./prune
+Pr(1300)=10657
+T(85765680)=200
+0.64user 0.00system 0:00.66elapsed 95%CPU (0avgtext+0avgdata 584maxresident)k
+0inputs+0outputs (0major+176minor)pagefaults 0swaps
+time ./target/release/tatami_rust 200
+Using 32 bit integers.
+PNUM = 1300
+FNUM = 10
+SMAX = 100000000
+Pr(1300)=10657
+T(85765680)=200
+0.60user 0.01system 0:00.63elapsed 98%CPU (0avgtext+0avgdata 880maxresident)k
+0inputs+0outputs (0major+257minor)pagefaults 0swaps
+
+On Pi 3B:
+
+clang -Wall -O3 -o prune prune.c -mtune=native
+clang -Wall -O3 -o limited limited.c  -mtune=native
+RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
+   Compiling tatami_rust v0.1.0 (/home/pi/tatami-rust)
+    Finished release [optimized] target(s) in 6.41s
+time ./limited
+T(85765680)=200
+4.02user 0.00system 0:04.02elapsed 99%CPU (0avgtext+0avgdata 1076maxresident)k
+0inputs+0outputs (0major+66minor)pagefaults 0swaps
+time ./prune
+Pr(1300)=10657
+T(85765680)=200
+3.74user 0.00system 0:03.74elapsed 99%CPU (0avgtext+0avgdata 1124maxresident)k
+0inputs+0outputs (0major+67minor)pagefaults 0swaps
+time ./target/release/tatami_rust 200
+Using 32 bit integers.
+PNUM = 1300
+FNUM = 10
+SMAX = 100000000
+Pr(1300)=10657
+T(85765680)=200
+4.03user 0.00system 0:04.04elapsed 100%CPU (0avgtext+0avgdata 1488maxresident)k
+0inputs+0outputs (0major+84minor)pagefaults 0swaps
 
