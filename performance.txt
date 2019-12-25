@@ -123,7 +123,7 @@ $ make
 clang -Wall -O3 -o prune prune.c -march=native -mtune=native
 clang -Wall -O3 -o limited limited.c -march=native -mtune=native
 RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
-   Compiling tatami_rust v0.1.0 (/mnt/c/Users/michael/tatami-rust)
+   Compiling tatami_rust v0.1.0 (/mnt/c/Users/zicog/tatami-rust)
     Finished release [optimized] target(s) in 1.26s
 time ./limited
 T(85765680)=200
@@ -146,6 +146,7 @@ T(85765680)=200
 
 On Pi 3B:
 
+$ make
 clang -Wall -O3 -o prune prune.c -mtune=native
 clang -Wall -O3 -o limited limited.c  -mtune=native
 RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32

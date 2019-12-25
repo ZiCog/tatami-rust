@@ -4,6 +4,9 @@ mod prune;
 mod error;
 use prune::Tatami;
 
+mod queue;
+
+
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
 fn main() {
