@@ -55,7 +55,7 @@ fn main() {
     let mut f = File::create(&dest_path).unwrap();
 
     if mem::size_of_val(&SMAX) == 4 {
-        f.write(b"type Int = i32;\n").unwrap();
+        f.write(b"type Int = u32;\n").unwrap();
     } else {
         f.write(b"type Int = i64;\n").unwrap();
     }

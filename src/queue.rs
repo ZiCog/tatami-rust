@@ -5,16 +5,18 @@
 
 
 const sMax: u32 = 100_000_000;
-const pNum: u32 = 1300;
+const pNum: usize = 1300;
 const fNum: usize = 10;
-const fifteen: f32 = 15.0;
-const sqrtOf2: f32 = 1.4142135623730951;
+const fifteen: f64 = 15.0;
+const sqrtOf2: f64 = 1.4142135623730951;
+
+include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
 
 pub struct Factors {
     s: u32,
     fmax: usize,
-    i: u32,
+    i: usize,
     p: Vec<u32>,
     n: Vec<u8>,
 }
@@ -60,7 +62,7 @@ void doinit()
 fn sigma(xp: &Factors) -> u32
 {
     let r: u32 = xp.n[0].into();
-    for i in 1..=xp.fmax {
+    for i in 1 ..= xp.fmax {
         r *= xp.n[i] as u32 + 1;
     }
     return r;
@@ -86,8 +88,8 @@ fn T(xp: &Factors) -> u32
         k = 1;
         l = 1;
         for i in 0 ..= xp.fmax {
-            k *= ppow(xp.p[i], z[i]);
-            l *= ppow(xp.p[i], xp.n[i] - z[i]);
+            k *= xp.p[i].pow(z[i] as u32);
+            l *= xp.p[i].pow(xp.n[i] as u32 - z[i] as u32);
         }
         if k <= l {
             if tfree(k, l) {
@@ -98,7 +100,7 @@ fn T(xp: &Factors) -> u32
     r
 }
 
-fn Twork(xp: &Factors) {
+fn Twork(xp: &Factors, Tisn: u32) {
     let fmax = xp.fmax;
     let smin: u32 = gMin;
     let s: u32;
@@ -106,7 +108,7 @@ fn Twork(xp: &Factors) {
     let p: u32;
     s = xp.s;
     pMax = smin / s + 1;
-    p = P[xp.i];
+    p = PR[xp.i];
     if p <= pMax {
         let r: u32;
         xp.n[fmax] += 1;
@@ -116,14 +118,14 @@ fn Twork(xp: &Factors) {
             r = T(xp);
             if r == Tisn {
                 while xp.s < smin {
-                    if __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0,
-                            __ATOMIC_RELAXED, __ATOMIC_RELAXED) {
+                    // THREAD STUFF
+                    // if __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED) {
                         break;
-                    }
+                    // }
                 }
             }
         }
-        Twork(xp);
+        Twork(xp, Tisn);
         xp.s = s;
         xp.n[fmax] -= 1;
         if xp.i >= pNum - 1 {
@@ -133,25 +135,34 @@ fn Twork(xp: &Factors) {
         if xp.n[fmax] != 0 {
             xp.fmax += 1;
         }
-        xp.p[xp.fmax] = P[xp.i];
+        xp.p[xp.fmax] = PR[xp.i];
         xp.n[xp.fmax] = 0;
-        Twork(xp);
+        Twork(xp, Tisn);
         xp.fmax = fmax;
         xp.i -= 1;
     }
 }
 
-fn Tqueue(xp: &Factors) {
+// From C std lib: The log function computes the value of the natural logarithm of argument x.
+fn log (x: f64) -> f64 {
+    x.ln()
+}
+
+// From C std lib: Returns base raised to the power exponent.
+fn pow (base: f64, exponent: f64) -> f64 {
+    base.powf(exponent)
+}
+
+fn Tqueue(xp: &Factors, Tisn: u32) {
     let fmax = xp.fmax;
     let smin: u32 = gMin;
     let s: u32 = xp.s;
     let pMax: u32 = smin / s + 1;
-    let p: u32 = P[xp.i];
+    let p: u32 = PR[xp.i];
     if p <= pMax {
         let r: u32;
-        if (pow(log(pMax), sqrtOf2) / log(p)) < fifteen {
+        if (pow(log(pMax.into()), sqrtOf2) / log(p.into())) < fifteen {
             let yp: Factors = *xp;
-            Lc += 1;
 /* THREAD STUFF
             pool->enqueue([yp] {
                 Twork(*yp);
@@ -167,14 +178,14 @@ fn Tqueue(xp: &Factors) {
             r = T(xp);
             if r == Tisn {
                 while xp.s < smin {
-                    if __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0,
-                            __ATOMIC_RELAXED, __ATOMIC_RELAXED) {
+                    // THREAD STUFF
+                    // if __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED) {
                         break;
-                    }
+                    //}
                 }
             }
         }
-        Tqueue(xp);
+        Tqueue(xp, Tisn);
         xp.s = s;
         xp.n[fmax] -= 1;
         if xp.i >= pNum - 1 {
@@ -184,9 +195,9 @@ fn Tqueue(xp: &Factors) {
         if xp.n[fmax] != 0 {
             xp.fmax += 1;
         }
-        xp.p[xp.fmax] = P[xp.i];
+        xp.p[xp.fmax] = PR[xp.i];
         xp.n[xp.fmax] = 0;
-        Tqueue(xp);
+        Tqueue(xp, Tisn);
         xp.fmax = fmax;
         xp.i -= 1;
     }
@@ -197,13 +208,12 @@ pub fn Tinv(n: u32) -> u32 {
 /* THREAD STUFF    
     pool = new Threads(thread::hardware_concurrency());
 */
-    Tisn = n;
-    x.p[0] = P[0];
+    x.p[0] = PR[0];
     x.n[0] = 1;
     x.i = 0;
     x.s = 2;
     x.fmax = 0;
-    Tqueue(&x);
+    Tqueue(&x, n);
 /* THREAD STUFF    
     delete pool;
 */
