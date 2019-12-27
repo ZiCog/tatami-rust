@@ -9,7 +9,7 @@ const sMax: u32 = 100_000_000;
 const pNum: usize = 1300;
 const fNum: usize = 10;
 const fifteen: f64 = 15.0;
-const sqrtOf2: f64 = 1.4142135623730951;
+const sqrtOf2: f64 = 1.414_213_562_373_095_1;
 
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
@@ -63,7 +63,7 @@ fn sigma(xp: &Factors) -> u32 {
     for i in 1..=xp.fmax {
         r *= xp.n[i] as u32 + 1;
     }
-    return r;
+    r
 }
 
 fn T(xp: &Factors) -> u32 {
@@ -88,10 +88,8 @@ fn T(xp: &Factors) -> u32 {
             k *= xp.p[i].pow(z[i] as u32);
             l *= xp.p[i].pow(xp.n[i] as u32 - z[i] as u32);
         }
-        if k <= l {
-            if tfree(k, l) {
-                r += 1;
-            }
+        if k <= l && tfree(k, l) {
+            r += 1;
         }
     }
     r
@@ -243,7 +241,7 @@ pub fn Tinv(n: u32) -> u32 {
     /* THREAD STUFF
         delete pool;
     */
-    return gMin;
+    gMin
 }
 
 /*

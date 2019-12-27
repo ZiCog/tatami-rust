@@ -55,22 +55,22 @@ fn main() {
     let mut f = File::create(&dest_path).unwrap();
 
     if mem::size_of_val(&SMAX) == 4 {
-        f.write(b"type Int = u32;\n").unwrap();
+        f.write_all(b"type Int = u32;\n").unwrap();
     } else {
-        f.write(b"type Int = i64;\n").unwrap();
+        f.write_all(b"type Int = i64;\n").unwrap();
     }
 
-    f.write(b"#[allow(clippy::unreadable_literal)]\n").unwrap();
-    f.write(format!("const SMAX: Int = {};\n", SMAX).as_bytes())
+    f.write_all(b"#[allow(clippy::unreadable_literal)]\n").unwrap();
+    f.write_all(format!("const SMAX: Int = {};\n", SMAX).as_bytes())
         .unwrap();
-    f.write(format!("const FNUM: usize = {};\n", FNUM).as_bytes())
+    f.write_all(format!("const FNUM: usize = {};\n", FNUM).as_bytes())
         .unwrap();
-    f.write(format!("pub static PR: [Int; {}] = [\n", PNUM).as_bytes())
+    f.write_all(format!("pub static PR: [Int; {}] = [\n", PNUM).as_bytes())
         .unwrap();
     for i in 0..primes.primes.len() {
-        f.write(b"    ").unwrap();
-        f.write(format!("{}", primes.primes[i]).as_bytes()).unwrap();
-        f.write(b",\n").unwrap();
+        f.write_all(b"    ").unwrap();
+        f.write_all(format!("{}", primes.primes[i]).as_bytes()).unwrap();
+        f.write_all(b",\n").unwrap();
     }
-    f.write(b"];\n").unwrap();
+    f.write_all(b"];\n").unwrap();
 }
