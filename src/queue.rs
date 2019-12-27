@@ -2,6 +2,7 @@
 
 // Written December 7, 2019 by Eric Olson
 // Translated to C++, 2019 by Jean M. Cyr
+// Translated to Rust. 25th Dec 2019 by Heater.
 
 #![allow(bad_style)] 
 
@@ -20,8 +21,8 @@ pub struct Factors {
     s: u32,
     fmax: usize,
     i: usize,
-    p: [u32; fNum], //Vec<u32>,
-    n: [u8; fNum], //Vec<u8>,
+    p: [u32; fNum],
+    n: [u8; fNum],
 }
 
 impl Factors {
@@ -36,11 +37,6 @@ impl Factors {
     }
 }
 
-/* Globals !!!
-u32 Tisn;
-u32 P[pNum];
-u32 gMin;
-*/
 
 fn tfree(k: u32, l: u32) -> bool {
     let n: u32 = l / k;
@@ -48,18 +44,6 @@ fn tfree(k: u32, l: u32) -> bool {
     let lmax: u32 = (k - 1) * (n + 1) - 2;
     lmin <= l && l <= lmax
 }
-
-/* Globals !!!
-void doinit()
-{
-    u32 i;
-    u32 p, r;
-    gMin = sMax;
-    P[0] = 2;
-    P[1] = 3;
-    iLim = 1;
-}
-*/
 
 fn sigma(xp: &Factors) -> u32 {
     let mut r: u32 = xp.n[0].into();
@@ -185,7 +169,11 @@ fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon:
         let mut r: u32;
         if (pow(log(pMax.into()), sqrtOf2) / log(p.into())) < fifteen {
             let mut yp: Factors = *xp;
-            Twork(&mut yp, Tisn, gMin);
+            let mut g = *gMin;
+            pool.spawn_fifo(move || {
+                Twork(&mut yp, Tisn, &mut g);
+            });
+        
             /* THREAD STUFF
                         pool->enqueue([yp] {
                             Twork(*yp);
@@ -239,6 +227,8 @@ pub fn Tinv(n: u32) -> u32 {
     // See: https://docs.rs/rayon/1.3.0/rayon/struct.ThreadPoolBuilder.html
     let mut pool = rayon::ThreadPoolBuilder::new().num_threads(8).build().unwrap();
 
+
+
     /* THREAD STUFF
         pool = new Threads(thread::hardware_concurrency());
     */
@@ -248,13 +238,3 @@ pub fn Tinv(n: u32) -> u32 {
     */
     gMin
 }
-
-/*
-int main()
-{
-    u32 n = 200;
-    doinit();
-    cout << "T(" << Tinv(n) << ")=" << n << "\n";
-    return 0;
-}
-*/
