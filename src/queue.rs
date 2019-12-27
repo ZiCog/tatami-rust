@@ -206,7 +206,7 @@ fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon:
                     }
                     // THREAD STUFF
                     // if __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED) {
-                    break;
+                    // break;
                     //}
                 }
             }
