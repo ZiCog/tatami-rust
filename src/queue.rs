@@ -102,6 +102,8 @@ fn T(xp: &Factors) -> u32 {
 //     if they are not equal, the current contents of *ptr is written into *expected.
 // True is returned if desired is written into *ptr
 // False is returned otherwise,
+// https://doc.rust-lang.org/std/sync/atomic/struct.AtomicPtr.html#method.compare_exchange
+// https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/_005f_005fatomic-Builtins.html
 fn __atomic_compare_exchange_n(ptr: &mut u32, expected: &mut u32, desired: u32) -> bool {
     let some_ptr = AtomicPtr::new(ptr);
     let value =
