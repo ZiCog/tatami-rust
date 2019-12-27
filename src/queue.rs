@@ -11,7 +11,7 @@ const sMax: u32 = 100_000_000;
 const pNum: usize = 1300;
 const fNum: usize = 10;
 const fifteen: f64 = 15.0;
-const sqrtOf2: f64 = 1.414_213_562_373_095_1;
+const sqrtOf2: f64 =  std::f64::consts::SQRT_2;
 
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
