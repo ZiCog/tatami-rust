@@ -29,7 +29,7 @@ fn main() {
             Err(e) => println!("{}", e),
         }
 
-        queue::Tinv(n);
+        println!("queue:  {}", queue::Tinv(n));
 
     }
 }
