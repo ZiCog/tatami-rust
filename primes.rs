@@ -18,8 +18,8 @@ impl Primes {
         let mut in_: usize = 1;
 
         fn isprime(p: i64, in_: &mut usize, primes: &[i64]) -> bool {
-            for i in 1..*in_ {
-                if p % primes[i] == 0 {
+            for prime in primes.iter().take(*in_).skip(1) {
+                if p % prime == 0 {
                     return false;
                 }
             }
