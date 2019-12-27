@@ -1,5 +1,5 @@
-use std::slice::Iter;
 use crate::error::TatamiError;
+use std::slice::Iter;
 
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 

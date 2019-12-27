@@ -6,27 +6,27 @@ use crate::primes::Primes;
 
 mod primes;
 
-use std::mem;
 use std::env;
 use std::fs::File;
 use std::io::Write;
+use std::mem;
 use std::path::Path;
 
-#[cfg(feature="use_i32")]
+#[cfg(feature = "use_i32")]
 mod defs {
     pub type Int = i32;
     pub const PNUM: usize = 1_300;
     pub const SMAX: Int = 100_000_000;
     pub const FNUM: usize = 10;
 }
-#[cfg(feature="use_i64")]
+#[cfg(feature = "use_i64")]
 mod defs {
     pub type Int = i64;
     pub const PNUM: usize = 40_000;
     pub const SMAX: Int = 100_000_000_000;
     pub const FNUM: usize = 20;
 }
-use defs::{Int, PNUM, SMAX, FNUM};
+use defs::{Int, FNUM, PNUM, SMAX};
 
 fn main() {
     let primes = Primes::new(PNUM);
@@ -61,9 +61,12 @@ fn main() {
     }
 
     f.write(b"#[allow(clippy::unreadable_literal)]\n").unwrap();
-    f.write(format!("const SMAX: Int = {};\n", SMAX).as_bytes()).unwrap();
-    f.write(format!("const FNUM: usize = {};\n", FNUM).as_bytes()).unwrap();
-    f.write(format!("pub static PR: [Int; {}] = [\n", PNUM).as_bytes()).unwrap();
+    f.write(format!("const SMAX: Int = {};\n", SMAX).as_bytes())
+        .unwrap();
+    f.write(format!("const FNUM: usize = {};\n", FNUM).as_bytes())
+        .unwrap();
+    f.write(format!("pub static PR: [Int; {}] = [\n", PNUM).as_bytes())
+        .unwrap();
     for i in 0..primes.primes.len() {
         f.write(b"    ").unwrap();
         f.write(format!("{}", primes.primes[i]).as_bytes()).unwrap();

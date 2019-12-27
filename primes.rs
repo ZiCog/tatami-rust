@@ -9,9 +9,7 @@ pub struct Primes {
 
 impl Primes {
     pub fn new(n: usize) -> Primes {
-        let mut primes = Primes {
-            primes: vec![0; n],
-        };
+        let mut primes = Primes { primes: vec![0; n] };
 
         let mut p: i64;
         primes.primes[0] = 2;
