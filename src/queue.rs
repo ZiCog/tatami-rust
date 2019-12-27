@@ -8,9 +8,7 @@
 
 use std::sync::atomic::{AtomicPtr, Ordering};
 
-const sMax: u32 = 100_000_000;
 const pNum: usize = 1300;
-const fNum: usize = 10;
 const fifteen: f64 = 15.0;
 const sqrtOf2: f64 =  std::f64::consts::SQRT_2;
 
@@ -21,8 +19,8 @@ pub struct Factors {
     s: u32,
     fmax: usize,
     i: usize,
-    p: [u32; fNum],
-    n: [u8; fNum],
+    p: [u32; FNUM],
+    n: [u8; FNUM],
 }
 
 impl Factors {
@@ -31,8 +29,8 @@ impl Factors {
             s: 2,
             fmax: 0,
             i: 0,
-            p: [PR[0]; fNum],
-            n: [1; fNum],
+            p: [PR[0]; FNUM],
+            n: [1; FNUM],
         }
     }
 }
@@ -54,17 +52,17 @@ fn sigma(xp: &Factors) -> u32 {
 }
 
 fn T(xp: &Factors) -> u32 {
-    let mut z: Vec<u8> = vec![0; fNum];
+    let mut z: Vec<u8> = vec![0; FNUM];
     let mut r: u32 = 0;
     loop {
         let mut k: u32;
         let mut l: u32;
-        for i in 0..=xp.fmax {
-            if z[i] < xp.n[i] {
-                z[i] += 1;
+        for (i, z) in z.iter_mut().enumerate().take(xp.fmax + 1) {
+            if *z < xp.n[i] {
+                *z += 1;
                 break;
             }
-            z[i] = 0;
+            *z = 0;
         }
         // FIXME:
         //        if i > xp.fmax {
@@ -72,9 +70,9 @@ fn T(xp: &Factors) -> u32 {
         //        }
         k = 1;
         l = 1;
-        for i in 0..=xp.fmax {
-            k *= xp.p[i].pow(z[i] as u32);
-            l *= xp.p[i].pow(xp.n[i] as u32 - z[i] as u32);
+        for (i, z) in z.iter().enumerate().take(xp.fmax + 1) {
+            k *= xp.p[i].pow(*z as u32);
+            l *= xp.p[i].pow(xp.n[i] as u32 - *z as u32);
         }
         if k <= l && tfree(k, l) {
             r += 1;
@@ -220,7 +218,7 @@ fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon:
 pub fn Tinv(n: u32) -> u32 {
     let mut x = Factors::new();
 
-    let mut gMin: u32 = sMax;
+    let mut gMin: u32 = SMAX;
 
     let ptr = &mut gMin;
 
