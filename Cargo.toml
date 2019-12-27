@@ -9,6 +9,7 @@ build = "build.rs"
 
 [dependencies]
 time = "*"
+rayon = "*"
 
 [features]
 # Select use of i32 or i64 as iteger type

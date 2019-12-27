@@ -28,5 +28,8 @@ fn main() {
             Ok(result) => println!("T({})={}", result, n),
             Err(e) => println!("{}", e),
         }
+
+        queue::Tinv(n);
+
     }
 }
