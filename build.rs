@@ -60,7 +60,8 @@ fn main() {
         f.write_all(b"type Int = i64;\n").unwrap();
     }
 
-    f.write_all(b"#[allow(clippy::unreadable_literal)]\n").unwrap();
+    f.write_all(b"#[allow(clippy::unreadable_literal)]\n")
+        .unwrap();
     f.write_all(format!("const SMAX: Int = {};\n", SMAX).as_bytes())
         .unwrap();
     f.write_all(format!("const FNUM: usize = {};\n", FNUM).as_bytes())
@@ -69,7 +70,8 @@ fn main() {
         .unwrap();
     for i in 0..primes.primes.len() {
         f.write_all(b"    ").unwrap();
-        f.write_all(format!("{}", primes.primes[i]).as_bytes()).unwrap();
+        f.write_all(format!("{}", primes.primes[i]).as_bytes())
+            .unwrap();
         f.write_all(b",\n").unwrap();
     }
     f.write_all(b"];\n").unwrap();

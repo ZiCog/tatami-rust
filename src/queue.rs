@@ -4,13 +4,13 @@
 // Translated to C++, 2019 by Jean M. Cyr
 // Translated to Rust. 25th Dec 2019 by Heater.
 
-#![allow(bad_style)] 
+//#![allow(bad_style)]
 
 use std::sync::atomic::{AtomicPtr, Ordering};
 
 const pNum: usize = 1300;
 const fifteen: f64 = 15.0;
-const sqrtOf2: f64 =  std::f64::consts::SQRT_2;
+const sqrtOf2: f64 = std::f64::consts::SQRT_2;
 
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
@@ -35,7 +35,6 @@ impl Factors {
     }
 }
 
-
 fn tfree(k: u32, l: u32) -> bool {
     let n: u32 = l / k;
     let lmin: u32 = (k + 1) * n + 2;
@@ -54,20 +53,18 @@ fn sigma(xp: &Factors) -> u32 {
 fn T(xp: &Factors) -> u32 {
     let mut z: Vec<u8> = vec![0; FNUM];
     let mut r: u32 = 0;
-    loop {
+    'outer: loop {
         let mut k: u32;
         let mut l: u32;
         for (i, z) in z.iter_mut().enumerate().take(xp.fmax + 1) {
             if *z < xp.n[i] {
                 *z += 1;
-                break;
+                if i > xp.fmax {
+                    break 'outer; // FIXME: Check this loop carefullly.!
+                }
             }
             *z = 0;
         }
-        // FIXME:
-        //        if i > xp.fmax {
-        //            break;
-        //        }
         k = 1;
         l = 1;
         for (i, z) in z.iter().enumerate().take(xp.fmax + 1) {
@@ -171,7 +168,7 @@ fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon:
             pool.spawn_fifo(move || {
                 Twork(&mut yp, Tisn, &mut g);
             });
-        
+
             /* THREAD STUFF
                         pool->enqueue([yp] {
                             Twork(*yp);
@@ -223,9 +220,10 @@ pub fn Tinv(n: u32) -> u32 {
     let ptr = &mut gMin;
 
     // See: https://docs.rs/rayon/1.3.0/rayon/struct.ThreadPoolBuilder.html
-    let mut pool = rayon::ThreadPoolBuilder::new().num_threads(8).build().unwrap();
-
-
+    let mut pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(8)
+        .build()
+        .unwrap();
 
     /* THREAD STUFF
         pool = new Threads(thread::hardware_concurrency());

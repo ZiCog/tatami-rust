@@ -30,6 +30,5 @@ fn main() {
         }
 
         println!("queue:  {}", queue::Tinv(n));
-
     }
 }
