@@ -4,11 +4,11 @@
 // Translated to C++, 2019 by Jean M. Cyr
 // Translated to Rust. 25th Dec 2019 by Heater.
 
-//#![allow(bad_style)]
+// We want to keep orignal C names for now. 
+#![allow(bad_style)]
 
 use std::sync::atomic::{AtomicPtr, Ordering};
 
-const pNum: usize = 1300;
 const fifteen: f64 = 15.0;
 const sqrtOf2: f64 = std::f64::consts::SQRT_2;
 
@@ -25,13 +25,16 @@ pub struct Factors {
 
 impl Factors {
     fn new() -> Factors {
-        Factors {
+        let mut x = Factors {
             s: 2,
             fmax: 0,
             i: 0,
-            p: [PR[0]; FNUM],
-            n: [1; FNUM],
-        }
+            p: [0; FNUM],
+            n: [0; FNUM],
+        };
+        x.p[0] = PR[0];
+        x.n[0] = 1;
+        x
     }
 }
 
@@ -50,7 +53,7 @@ fn sigma(xp: &Factors) -> u32 {
     r
 }
 
-fn T(xp: &Factors) -> u32 {
+fn T(xp: &mut Factors) -> u32 {
     let mut z: Vec<u8> = vec![0; FNUM];
     let mut r: u32 = 0;
     'outer: loop {
@@ -97,7 +100,7 @@ fn __atomic_compare_exchange_n(ptr: &mut u32, expected: &mut u32, mut desired: u
     }
 }
 
-fn Twork(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32) {
+fn Twork(xp: &mut Factors, Tisn: u32, gMin: &mut u32) {
     let fmax = xp.fmax;
     let mut smin: u32 = *gMin;
     let s: u32;
@@ -118,18 +121,13 @@ fn Twork(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32) {
                     if __atomic_compare_exchange_n(gMin, &mut smin, xp.s) {
                         break;
                     }
-
-                    // THREAD STUFF
-                    // if __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED) {
-                    //    break;
-                    // }
                 }
             }
         }
         Twork(xp, Tisn, gMin);
         xp.s = s;
         xp.n[fmax] -= 1;
-        if xp.i >= pNum - 1 {
+        if xp.i >= PR.len() - 1 {
             return;
         }
         xp.i += 1;
@@ -154,7 +152,7 @@ fn pow(base: f64, exponent: f64) -> f64 {
     base.powf(exponent)
 }
 
-fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon::ThreadPool) {
+fn Tqueue(xp: &mut Factors, Tisn: u32, gMin: &mut u32, pool: &rayon::ThreadPool) {
     let fmax = xp.fmax;
     let mut smin: u32 = *gMin;
     let s: u32 = xp.s;
@@ -168,36 +166,25 @@ fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon:
             pool.spawn_fifo(move || {
                 Twork(&mut yp, Tisn, &mut g);
             });
-
-            /* THREAD STUFF
-                        pool->enqueue([yp] {
-                            Twork(*yp);
-                            delete yp;
-                        });
-            */
             return;
         }
         xp.n[fmax] += 1;
         xp.s = s * p;
-        r = sigma(&xp);
+        r = sigma(xp);
         if r >= Tisn {
-            r = T(&xp);
+            r = T(xp);
             if r == Tisn {
                 while xp.s < smin {
                     if __atomic_compare_exchange_n(gMin, &mut smin, xp.s) {
                         break;
                     }
-                    // THREAD STUFF
-                    // if __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED) {
-                    // break;
-                    //}
                 }
             }
         }
-        Tqueue(&mut xp, Tisn, gMin, &mut pool);
+        Tqueue(xp, Tisn, gMin, pool);
         xp.s = s;
         xp.n[fmax] -= 1;
-        if xp.i >= pNum - 1 {
+        if xp.i >= PR.len() - 1 {
             return;
         }
         xp.i += 1;
@@ -206,7 +193,7 @@ fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon:
         }
         xp.p[xp.fmax] = PR[xp.i];
         xp.n[xp.fmax] = 0;
-        Tqueue(&mut xp, Tisn, gMin, &mut pool);
+        Tqueue(xp, Tisn, gMin, pool);
         xp.fmax = fmax;
         xp.i -= 1;
     }
@@ -214,23 +201,14 @@ fn Tqueue(mut xp: &mut Factors, Tisn: u32, gMin: &mut u32, mut pool: &mut rayon:
 
 pub fn Tinv(n: u32) -> u32 {
     let mut x = Factors::new();
-
     let mut gMin: u32 = SMAX;
 
-    let ptr = &mut gMin;
-
     // See: https://docs.rs/rayon/1.3.0/rayon/struct.ThreadPoolBuilder.html
-    let mut pool = rayon::ThreadPoolBuilder::new()
+    let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(8)
         .build()
         .unwrap();
 
-    /* THREAD STUFF
-        pool = new Threads(thread::hardware_concurrency());
-    */
-    Tqueue(&mut x, n, ptr, &mut pool);
-    /* THREAD STUFF
-        delete pool;
-    */
+    Tqueue(&mut x, n, &mut gMin, &pool);
     gMin
 }

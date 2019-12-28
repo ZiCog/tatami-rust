@@ -22,6 +22,7 @@ fn main() {
 
     println!("Pr({})={}", PR.len(), PR.last().unwrap());
 
+    println!("Running Rust translation of prune.c...");
     if let Ok(n) = args[1].parse::<Int>() {
         let mut tatami = Tatami::new();
         match tatami.inv(n) {
@@ -29,6 +30,8 @@ fn main() {
             Err(e) => println!("{}", e),
         }
 
-        println!("queue:  {}", queue::Tinv(n));
+        println!("Running Rust translation of queue.c...");
+        let result = queue::Tinv(n);
+        println!("T({})={}", result, n)
     }
 }
