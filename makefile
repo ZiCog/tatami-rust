@@ -5,6 +5,7 @@ run: all
 	time ./limited
 	time ./prune
 	time ./queue
+	time ./queue2
 	time ./target/release/tatami_rust 200
 
 all: prune limited queue target/release/tatami_rust
@@ -18,12 +19,15 @@ prune: prune.c
 queue: queue.cpp
 	$(CPP) -Wall -O3 -o queue queue.cpp -march=native -mtune=native -lpthread
 
+queue2: queue2.cpp
+	$(CPP) -Wall -O3 -o queue2 queue2.cpp -march=native -mtune=native -lpthread
+
 limited: limited.c
 	$(CC) -Wall -O3 -o limited limited.c -march=native -mtune=native
 
 
 clean:
-	rm prune limited queue
+	rm prune limited queue queue2
 	cargo clean
 
 
