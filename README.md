@@ -76,5 +76,14 @@ The original solutions by E.J.Olsen in C are included here: limited.c for and pr
     sys     0m0.016s
 
 
+## Credits:
+
+Eric Olson - For the original single threaded prune.c.
+
+Jean M. Cyr - For the threaded queue.c version.
+
+alice - Suggested using rayon scope and other helpful hints. 
+https://users.rust-lang.org/t/yes-at-last-my-rust-is-faster-than-c/36100/21
+
 
 
