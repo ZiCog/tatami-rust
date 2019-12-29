@@ -7,7 +7,9 @@
 // We want to keep orignal C names for now. 
 #![allow(bad_style)]
 
-use std::sync::atomic::{AtomicPtr, Ordering};
+use std::sync::atomic::{AtomicU32, Ordering};
+
+use rayon::Scope;
 
 const fifteen: f64 = 15.0;
 const sqrtOf2: f64 = std::f64::consts::SQRT_2;
@@ -82,27 +84,18 @@ fn T(xp: &mut Factors) -> u32 {
 }
 
 // From GCC atomic built-in.
+// bool __atomic_compare_exchange_n (type *ptr, type *expected, type desired, bool weak, int success_memmodel, int failure_memmodel)
 // This built-in function implements an atomic compare and exchange operation.
 // This compares the contents of *ptr with the contents of *expected and...
 //     if equal, writes desired into *ptr.
 //     if they are not equal, the current contents of *ptr is written into *expected.
 // True is returned if desired is written into *ptr
 // False is returned otherwise,
-// https://doc.rust-lang.org/std/sync/atomic/struct.AtomicPtr.html#method.compare_exchange
+// https://doc.rust-lang.org/stable/std/sync/atomic/struct.AtomicU32.html
 // https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/_005f_005fatomic-Builtins.html
-fn __atomic_compare_exchange_n(ptr: &mut u32, expected: &mut u32, mut desired: u32) -> bool {
-    let some_ptr = AtomicPtr::new(ptr);
-    let value =
-        some_ptr.compare_exchange(expected, &mut desired, Ordering::Relaxed, Ordering::Relaxed);
-    match value {
-        Ok(_expected) => true,
-        Err(_expected) => false,
-    }
-}
-
-fn Twork(xp: &mut Factors, Tisn: u32, gMin: &mut u32) {
+fn Twork<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32) {
     let fmax = xp.fmax;
-    let mut smin: u32 = *gMin;
+    let mut smin: u32 = gMin.load(Ordering::Relaxed);
     let s: u32;
     let pMax: u32;
     let p: u32;
@@ -117,10 +110,12 @@ fn Twork(xp: &mut Factors, Tisn: u32, gMin: &mut u32) {
         if r >= Tisn {
             r = T(xp);
             if r == Tisn {
+                //while (xp.s < smin) {
+                //    __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);
+                //}
+
                 while xp.s < smin {
-                    if __atomic_compare_exchange_n(gMin, &mut smin, xp.s) {
-                        break;
-                    }
+                    smin = gMin.swap(xp.s, Ordering::Relaxed);
                 }
             }
         }
@@ -152,9 +147,9 @@ fn pow(base: f64, exponent: f64) -> f64 {
     base.powf(exponent)
 }
 
-fn Tqueue(xp: &mut Factors, Tisn: u32, gMin: &mut u32, pool: &rayon::ThreadPool) {
+fn Tqueue<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32, scope: &Scope<'scope>) {
     let fmax = xp.fmax;
-    let mut smin: u32 = *gMin;
+    let mut smin: u32 = gMin.load(Ordering::Relaxed);
     let s: u32 = xp.s;
     let pMax: u32 = smin / s + 1;
     let p: u32 = PR[xp.i];
@@ -162,10 +157,11 @@ fn Tqueue(xp: &mut Factors, Tisn: u32, gMin: &mut u32, pool: &rayon::ThreadPool)
         let mut r: u32;
         if (pow(log(pMax.into()), sqrtOf2) / log(p.into())) < fifteen {
             let mut yp: Factors = *xp;
-            let mut g = *gMin;
-            pool.spawn_fifo(move || {
-                Twork(&mut yp, Tisn, &mut g);
-            });
+
+            scope.spawn(move |_scope| {
+                Twork(&mut yp, Tisn, gMin);
+            });            
+
             return;
         }
         xp.n[fmax] += 1;
@@ -174,14 +170,16 @@ fn Tqueue(xp: &mut Factors, Tisn: u32, gMin: &mut u32, pool: &rayon::ThreadPool)
         if r >= Tisn {
             r = T(xp);
             if r == Tisn {
+                //while (xp.s < smin) {
+                //    __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);
+                //}
+
                 while xp.s < smin {
-                    if __atomic_compare_exchange_n(gMin, &mut smin, xp.s) {
-                        break;
-                    }
+                    smin = gMin.swap(xp.s, Ordering::Relaxed);
                 }
             }
         }
-        Tqueue(xp, Tisn, gMin, pool);
+        Tqueue(xp, Tisn, gMin, scope);
         xp.s = s;
         xp.n[fmax] -= 1;
         if xp.i >= PR.len() - 1 {
@@ -193,7 +191,7 @@ fn Tqueue(xp: &mut Factors, Tisn: u32, gMin: &mut u32, pool: &rayon::ThreadPool)
         }
         xp.p[xp.fmax] = PR[xp.i];
         xp.n[xp.fmax] = 0;
-        Tqueue(xp, Tisn, gMin, pool);
+        Tqueue(xp, Tisn, gMin, scope);
         xp.fmax = fmax;
         xp.i -= 1;
     }
@@ -201,14 +199,13 @@ fn Tqueue(xp: &mut Factors, Tisn: u32, gMin: &mut u32, pool: &rayon::ThreadPool)
 
 pub fn Tinv(n: u32) -> u32 {
     let mut x = Factors::new();
-    let mut gMin: u32 = SMAX;
+    let gMin = AtomicU32::new(SMAX);
 
-    // See: https://docs.rs/rayon/1.3.0/rayon/struct.ThreadPoolBuilder.html
-    let pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(8)
-        .build()
-        .unwrap();
-
-    Tqueue(&mut x, n, &mut gMin, &pool);
-    gMin
+    // Using rayon scope. See suggestion by alice here:
+    // https://users.rust-lang.org/t/yes-at-last-my-rust-is-faster-than-c/36100/21
+    rayon::scope(|scope| {
+        Tqueue(&mut x, n, &gMin, scope);
+    });
+    
+    gMin.into_inner()
 }
