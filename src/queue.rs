@@ -1,18 +1,15 @@
-// queue.rs -- Compute T(s) from Project Euler Problem 256
+// queue.rs -- Compute t(s) from Project Euler Problem 256
 
 // Written December 7, 2019 by Eric Olson
 // Translated to C++, 2019 by Jean M. Cyr
 // Translated to Rust. 25th Dec 2019 by Heater.
 
-// We want to keep orignal C names for now. 
-#![allow(bad_style)]
-
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use rayon::Scope;
 
-const fifteen: f64 = 15.0;
-const sqrtOf2: f64 = std::f64::consts::SQRT_2;
+const FIFTEEN: f64 = 15.0;
+const SQRT_OF2: f64 = std::f64::consts::SQRT_2;
 
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
@@ -55,7 +52,7 @@ fn sigma(xp: &Factors) -> u32 {
     r
 }
 
-fn T(xp: &mut Factors) -> u32 {
+fn t(xp: &mut Factors) -> u32 {
     let mut z: Vec<u8> = vec![0; FNUM];
     let mut r: u32 = 0;
     loop {
@@ -66,7 +63,7 @@ fn T(xp: &mut Factors) -> u32 {
             if *z < xp.n[i] {
                 *z += 1;
                 found = true;
-                break
+                break;
             }
             *z = 0;
         }
@@ -87,30 +84,30 @@ fn T(xp: &mut Factors) -> u32 {
     r
 }
 
-fn Twork<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32) {
+fn twork<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU32) {
     let fmax = xp.fmax;
-    let mut smin: u32 = gMin.load(Ordering::Relaxed);
+    let mut smin: u32 = g_min.load(Ordering::Relaxed);
     let s: u32;
-    let pMax: u32;
+    let p_max: u32;
     let p: u32;
     s = xp.s;
-    pMax = smin / s + 1;
+    p_max = smin / s + 1;
     p = PR[xp.i];
-    if p <= pMax {
+    if p <= p_max {
         let mut r: u32;
         xp.n[fmax] += 1;
         xp.s = s * p;
         r = sigma(xp);
-        if r >= Tisn {
-            r = T(xp);
-            if r == Tisn {
+        if r >= tisn {
+            r = t(xp);
+            if r == tisn {
                 while xp.s < smin {
-                    gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
-                    smin = gMin.load(Ordering::Relaxed);
+                    g_min.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                    smin = g_min.load(Ordering::Relaxed);
                 }
             }
         }
-        Twork(xp, Tisn, gMin);
+        twork(xp, tisn, g_min);
         xp.s = s;
         xp.n[fmax] -= 1;
         if xp.i >= PR.len() - 1 {
@@ -122,7 +119,7 @@ fn Twork<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32) {
         }
         xp.p[xp.fmax] = PR[xp.i];
         xp.n[xp.fmax] = 0;
-        Twork(xp, Tisn, gMin);
+        twork(xp, tisn, g_min);
         xp.fmax = fmax;
         xp.i -= 1;
     }
@@ -138,36 +135,36 @@ fn pow(base: f64, exponent: f64) -> f64 {
     base.powf(exponent)
 }
 
-fn Tqueue<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32, scope: &Scope<'scope>) {
+fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU32, scope: &Scope<'scope>) {
     let fmax = xp.fmax;
-    let mut smin: u32 = gMin.load(Ordering::Relaxed);
+    let mut smin: u32 = g_min.load(Ordering::Relaxed);
     let s: u32 = xp.s;
-    let pMax: u32 = smin / s + 1;
+    let p_max: u32 = smin / s + 1;
     let p: u32 = PR[xp.i];
-    if p <= pMax {
+    if p <= p_max {
         let mut r: u32;
-        if (pow(log(pMax.into()), sqrtOf2) / log(p.into())) < fifteen {
+        if (pow(log(p_max.into()), SQRT_OF2) / log(p.into())) < FIFTEEN {
             let mut yp: Factors = *xp;
 
             scope.spawn(move |_scope| {
-                Twork(&mut yp, Tisn, gMin);
-            });            
+                twork(&mut yp, tisn, g_min);
+            });
 
             return;
         }
         xp.n[fmax] += 1;
         xp.s = s * p;
         r = sigma(xp);
-        if r >= Tisn {
-            r = T(xp);
-            if r == Tisn {
+        if r >= tisn {
+            r = t(xp);
+            if r == tisn {
                 while xp.s < smin {
-                    gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
-                    smin = gMin.load(Ordering::Relaxed);
+                    g_min.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                    smin = g_min.load(Ordering::Relaxed);
                 }
             }
         }
-        Tqueue(xp, Tisn, gMin, scope);
+        tqueue(xp, tisn, g_min, scope);
         xp.s = s;
         xp.n[fmax] -= 1;
         if xp.i >= PR.len() - 1 {
@@ -179,19 +176,19 @@ fn Tqueue<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32, scope: &
         }
         xp.p[xp.fmax] = PR[xp.i];
         xp.n[xp.fmax] = 0;
-        Tqueue(xp, Tisn, gMin, scope);
+        tqueue(xp, tisn, g_min, scope);
         xp.fmax = fmax;
         xp.i -= 1;
     }
 }
 
-pub fn Tinv(n: u32) -> u32 {
+pub fn tinv(n: u32) -> u32 {
     let mut x = Factors::new();
-    let gMin = AtomicU32::new(SMAX);
+    let g_min = AtomicU32::new(SMAX);
 
     rayon::scope(|scope| {
-        Tqueue(&mut x, n, &gMin, scope);
+        tqueue(&mut x, n, &g_min, scope);
     });
-    
-    gMin.into_inner()
+
+    g_min.into_inner()
 }
