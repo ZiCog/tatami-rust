@@ -58,18 +58,22 @@ fn sigma(xp: &Factors) -> u32 {
 fn T(xp: &mut Factors) -> u32 {
     let mut z: Vec<u8> = vec![0; FNUM];
     let mut r: u32 = 0;
-    'outer: loop {
+    loop {
         let mut k: u32;
         let mut l: u32;
+        let mut found: bool = false;
         for (i, z) in z.iter_mut().enumerate().take(xp.fmax + 1) {
             if *z < xp.n[i] {
                 *z += 1;
-                if i > xp.fmax {
-                    break 'outer; // FIXME: Check this loop carefullly.!
-                }
+                found = true;
+                break
             }
             *z = 0;
         }
+        if !found {
+            break;
+        }
+
         k = 1;
         l = 1;
         for (i, z) in z.iter().enumerate().take(xp.fmax + 1) {
