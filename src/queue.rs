@@ -75,11 +75,10 @@ fn T(xp: &mut Factors) -> u32 {
         }
 
         k = 1;
-        l = 1;
         for (i, z) in z.iter().enumerate().take(xp.fmax + 1) {
             k *= xp.p[i].pow(*z as u32);
-            l *= xp.p[i].pow(xp.n[i] as u32 - *z as u32);
         }
+        l = xp.s / k;
         if k <= l && tfree(k, l) {
             r += 1;
         }
