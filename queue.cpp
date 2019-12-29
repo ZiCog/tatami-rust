@@ -234,11 +234,11 @@ void Twork(factors& xp)
         if (r >= Tisn)
         {
             r = T(xp);
-            if (r == Tisn)
-                while (xp.s < smin)
-                    if (__atomic_compare_exchange_n(&gMin, &smin, xp.s, 0,
-                            __ATOMIC_RELAXED, __ATOMIC_RELAXED))
-                        break;
+            if (r == Tisn) {
+                while (xp.s < smin) {
+                    __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);
+                }
+            }
         }
         Twork(xp);
         xp.s = s;
@@ -285,11 +285,11 @@ void Tqueue(factors& xp)
         if (r >= Tisn)
         {
             r = T(xp);
-            if (r == Tisn)
-                while (xp.s < smin)
-                    if (__atomic_compare_exchange_n(&gMin, &smin, xp.s, 0,
-                            __ATOMIC_RELAXED, __ATOMIC_RELAXED))
-                        break;
+            if (r == Tisn) {
+                while (xp.s < smin) {
+                    __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);
+                }
+            }
         }
         Tqueue(xp);
         xp.s = s;

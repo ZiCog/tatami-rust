@@ -115,7 +115,7 @@ fn Twork<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32) {
                 //}
 
                 while xp.s < smin {
-                    smin = gMin.swap(xp.s, Ordering::Relaxed);
+                    smin = gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
                 }
             }
         }
@@ -175,7 +175,7 @@ fn Tqueue<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32, scope: &
                 //}
 
                 while xp.s < smin {
-                    smin = gMin.swap(xp.s, Ordering::Relaxed);
+                    smin = gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
                 }
             }
         }
