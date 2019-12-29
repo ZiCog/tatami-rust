@@ -87,16 +87,6 @@ fn T(xp: &mut Factors) -> u32 {
     r
 }
 
-// From GCC atomic built-in.
-// bool __atomic_compare_exchange_n (type *ptr, type *expected, type desired, bool weak, int success_memmodel, int failure_memmodel)
-// This built-in function implements an atomic compare and exchange operation.
-// This compares the contents of *ptr with the contents of *expected and...
-//     if equal, writes desired into *ptr.
-//     if they are not equal, the current contents of *ptr is written into *expected.
-// True is returned if desired is written into *ptr
-// False is returned otherwise,
-// https://doc.rust-lang.org/stable/std/sync/atomic/struct.AtomicU32.html
-// https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/_005f_005fatomic-Builtins.html
 fn Twork<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32) {
     let fmax = xp.fmax;
     let mut smin: u32 = gMin.load(Ordering::Relaxed);
@@ -114,12 +104,9 @@ fn Twork<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32) {
         if r >= Tisn {
             r = T(xp);
             if r == Tisn {
-                //while (xp.s < smin) {
-                //    __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);
-                //}
-
                 while xp.s < smin {
-                    smin = gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                    gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                    smin = gMin.load(Ordering::Relaxed);
                 }
             }
         }
@@ -174,12 +161,9 @@ fn Tqueue<'scope>(xp: &mut Factors, Tisn: u32, gMin: &'scope AtomicU32, scope: &
         if r >= Tisn {
             r = T(xp);
             if r == Tisn {
-                //while (xp.s < smin) {
-                //    __atomic_compare_exchange_n(&gMin, &smin, xp.s, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);
-                //}
-
                 while xp.s < smin {
-                    smin = gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                    gMin.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                    smin = gMin.load(Ordering::Relaxed);
                 }
             }
         }
@@ -205,8 +189,6 @@ pub fn Tinv(n: u32) -> u32 {
     let mut x = Factors::new();
     let gMin = AtomicU32::new(SMAX);
 
-    // Using rayon scope. See suggestion by alice here:
-    // https://users.rust-lang.org/t/yes-at-last-my-rust-is-faster-than-c/36100/21
     rayon::scope(|scope| {
         Tqueue(&mut x, n, &gMin, scope);
     });
