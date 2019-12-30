@@ -1,8 +1,8 @@
 use std::env;
 use std::mem;
 mod error;
-mod prune;
-use prune::Tatami;
+//mod prune;
+//use prune::Tatami;
 
 mod queue;
 
@@ -23,7 +23,7 @@ fn main() {
     //    println!("Pr({})={}", PR.len(), PR.last().unwrap());
 
     //    println!("Running Rust translation of prune.c...");
-    if let Ok(n) = args[1].parse::<Int>() {
+    if let Ok(n) = args[1].parse::<u32>() {
         //        let mut tatami = Tatami::new();
         //        match tatami.inv(n) {
         //            Ok(result) => println!("T({})={}", result, n),

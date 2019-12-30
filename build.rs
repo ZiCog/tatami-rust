@@ -12,16 +12,18 @@ use std::io::Write;
 use std::mem;
 use std::path::Path;
 
-#[cfg(feature = "use_i32")]
+#[cfg(feature = "use_u32")]
 mod defs {
-    pub type Int = i32;
+    pub type Int = u32;
+    pub type PrimeType = u32;
     pub const PNUM: usize = 1_300;
     pub const SMAX: Int = 100_000_000;
     pub const FNUM: usize = 10;
 }
-#[cfg(feature = "use_i64")]
+#[cfg(feature = "use_u64")]
 mod defs {
-    pub type Int = i64;
+    pub type Int = u64;
+    pub type PrimeType = u64;
     pub const PNUM: usize = 40_000;
     pub const SMAX: Int = 100_000_000_000;
     pub const FNUM: usize = 20;
@@ -60,13 +62,15 @@ fn main() {
         f.write_all(b"type Int = i64;\n").unwrap();
     }
 
+    f.write_all(b"type PrimeType = u64;\n").unwrap();
+
     f.write_all(b"#[allow(clippy::unreadable_literal)]\n")
         .unwrap();
-    f.write_all(format!("const SMAX: Int = {};\n", SMAX).as_bytes())
+    f.write_all(format!("const SMAX: PrimeType = {};\n", SMAX).as_bytes())
         .unwrap();
     f.write_all(format!("const FNUM: usize = {};\n", FNUM).as_bytes())
         .unwrap();
-    f.write_all(format!("pub static PR: [Int; {}] = [\n", PNUM).as_bytes())
+    f.write_all(format!("pub static PR: [PrimeType; {}] = [\n", PNUM).as_bytes())
         .unwrap();
     for i in 0..primes.primes.len() {
         f.write_all(b"    ").unwrap();

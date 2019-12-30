@@ -4,6 +4,7 @@
 // Translated to C++, 2019 by Jean M. Cyr
 // Translated to Rust. 25th Dec 2019 by Heater.
 
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use rayon::Scope;
@@ -15,10 +16,10 @@ include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
 #[derive(Debug, Clone, Copy)]
 pub struct Factors {
-    s: u32,
+    s: PrimeType,
     fmax: usize,
     i: usize,
-    p: [u32; FNUM],
+    p: [PrimeType; FNUM],
     n: [u8; FNUM],
 }
 
@@ -37,10 +38,10 @@ impl Factors {
     }
 }
 
-fn tfree(k: u32, l: u32) -> bool {
-    let n: u32 = l / k;
-    let lmin: u32 = (k + 1) * n + 2;
-    let lmax: u32 = (k - 1) * (n + 1) - 2;
+fn tfree(k: PrimeType, l: PrimeType) -> bool {
+    let n: PrimeType = l / k;
+    let lmin: PrimeType = (k + 1) * n + 2;
+    let lmax: PrimeType = (k - 1) * (n + 1) - 2;
     lmin <= l && l <= lmax
 }
 
@@ -56,8 +57,8 @@ fn t(xp: &mut Factors) -> u32 {
     let mut z: Vec<u8> = vec![0; FNUM];
     let mut r: u32 = 0;
     loop {
-        let mut k: u32;
-        let l: u32;
+        let mut k: PrimeType;
+        let l: PrimeType;
         let mut found: bool = false;
         for (i, z) in z.iter_mut().enumerate().take(xp.fmax + 1) {
             if *z < xp.n[i] {
@@ -83,15 +84,13 @@ fn t(xp: &mut Factors) -> u32 {
     r
 }
 
-fn twork<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU32) {
+fn twork<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU64) {
+    // FIXME How to make 32 or 64 bit atomic?
     let fmax = xp.fmax;
-    let mut smin: u32 = g_min.load(Ordering::Relaxed);
-    let s: u32;
-    let p_max: u32;
-    let p: u32;
-    s = xp.s;
-    p_max = smin / s + 1;
-    p = PR[xp.i];
+    let mut smin = g_min.load(Ordering::Relaxed);
+    let s = xp.s;
+    let p_max = smin / s + 1;
+    let p = PR[xp.i];
     if p <= p_max {
         let mut r: u32;
         xp.n[fmax] += 1;
@@ -134,15 +133,16 @@ fn pow(base: f64, exponent: f64) -> f64 {
     base.powf(exponent)
 }
 
-fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU32, scope: &Scope<'scope>) {
+fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU64, scope: &Scope<'scope>) {
+    // FIXME: How to make 32 / 64 bit atomic
     let fmax = xp.fmax;
-    let mut smin: u32 = g_min.load(Ordering::Relaxed);
-    let s: u32 = xp.s;
-    let p_max: u32 = smin / s + 1;
-    let p: u32 = PR[xp.i];
+    let mut smin = g_min.load(Ordering::Relaxed);
+    let s = xp.s;
+    let p_max = smin / s + 1;
+    let p = PR[xp.i];
     if p <= p_max {
         let mut r: u32;
-        if (pow(log(p_max.into()), SQRT_OF2) / log(p.into())) < FIFTEEN {
+        if (pow(log(p_max as f64), SQRT_OF2) / log(p as f64)) < FIFTEEN {
             let mut yp: Factors = *xp;
 
             scope.spawn(move |_scope| {
@@ -181,11 +181,18 @@ fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU32, scope: 
     }
 }
 
-pub fn tinv(n: u32) -> u32 {
+pub fn tinv(n: u32) -> u64 {
     let mut x = Factors::new();
-    let g_min = AtomicU32::new(SMAX);
+    //let g_min = AtomicU32::new(SMAX);
+    let g_min = AtomicU64::new(SMAX);
 
-    rayon::scope(|scope| {
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(32)
+        .stack_size(4 * 1000_000)
+        .build()
+        .unwrap();
+
+    pool.scope(|scope| {
         tqueue(&mut x, n, &g_min, scope);
     });
 

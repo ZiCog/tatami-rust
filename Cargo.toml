@@ -12,9 +12,9 @@ time = "*"
 rayon = "*"
 
 [features]
-# Select use of i32 or i64 as iteger type
-use_i64 = []
-use_i32 = []
+# Select use of u32 or u64 as iteger type
+use_u64 = []
+use_u32 = []
 
 
 
