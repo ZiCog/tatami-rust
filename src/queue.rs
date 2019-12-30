@@ -57,7 +57,7 @@ fn t(xp: &mut Factors) -> u32 {
     let mut r: u32 = 0;
     loop {
         let mut k: u32;
-        let mut l: u32;
+        let l: u32;
         let mut found: bool = false;
         for (i, z) in z.iter_mut().enumerate().take(xp.fmax + 1) {
             if *z < xp.n[i] {
