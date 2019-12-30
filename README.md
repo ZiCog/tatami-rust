@@ -7,11 +7,16 @@ This program can be built to use 32 or 64 bit integers. A trade off between perf
 
 Use: 
 
-    $ cargo build --release --features "use_i64"
+    $ RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
 
 Or:
 
-    $ cargo build --release --features "use_i32"
+    $ RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
+
+There is a make file to build and time the Rust and the C versions it is derived from:
+
+    $ make clean
+    $ make
 
 ## Run
 
@@ -57,6 +62,7 @@ But up to 200 is OK:
 ## Original C codes:
 
 The original solutions by E.J.Olsen in C are included here: limited.c for and prune.c. The Rust version is derived from prune.c.
+See link below for his repository.
 
     $ gcc -Wall -O3 -o limited limited.c -march=native -mtune=native
     $ time ./limited
@@ -79,11 +85,14 @@ The original solutions by E.J.Olsen in C are included here: limited.c for and pr
 ## Credits:
 
 Eric Olson - For the original single threaded prune.c.
+http://fractal.math.unr.edu/~ejolson/pi/tatami/src/
 
 Jean M. Cyr - For the threaded queue.c version.
 
 alice - Suggested using rayon scope and other helpful hints. 
 https://users.rust-lang.org/t/yes-at-last-my-rust-is-faster-than-c/36100/21
 
+All contributors to this little Tatami cosing challenge discussion thread on the Raspberry Pi forum:
+https://www.raspberrypi.org/forums/viewtopic.php?f=31&t=257317
 
 
