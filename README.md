@@ -18,6 +18,9 @@ There is a make file to build and time the Rust and the C versions it is derived
     $ make clean
     $ make
 
+Note: This crashed cargo/rustc on the Raspberry Pi under Raspbian. However I used raspbian-nspawn-64 to get a 64 bit shell (when one has booted a 64 bit kernel) where it all compiles and runs just fine. See here for instructions on raspbian-nspawn-64 https://www.raspberrypi.org/forums/viewtopic.php?p=1566212#p1566212
+
+
 ## Run
 
 A 64 bit build can handle an 'n' argument up to 1000
