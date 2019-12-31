@@ -11,12 +11,13 @@ build = "build.rs"
 time = "*"
 rayon = "*"
 
+[build-dependencies]
+num = "0.2"
+
 [features]
-# Select use of u32 or u64 as iteger type
+# Select use of u32 or u64 as prime number type
 use_u64 = []
 use_u32 = []
-
-
 
 [profile.release]
 #overflow-checks = true

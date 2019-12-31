@@ -4,6 +4,7 @@
 //
 use crate::primes::Primes;
 
+mod defs;
 mod primes;
 
 use std::env;
@@ -12,6 +13,7 @@ use std::io::Write;
 use std::mem;
 use std::path::Path;
 
+/*
 #[cfg(feature = "use_u32")]
 mod defs {
     pub type Int = u32;
@@ -28,7 +30,8 @@ mod defs {
     pub const SMAX: Int = 100_000_000_000;
     pub const FNUM: usize = 20;
 }
-use defs::{Int, FNUM, PNUM, SMAX};
+*/
+use defs::defs::{Int, FNUM, PNUM, SMAX};
 
 fn main() {
     let primes = Primes::new(PNUM);
