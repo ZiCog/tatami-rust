@@ -1,8 +1,8 @@
 use std::env;
 use std::mem;
 mod error;
-//mod prune;
-//use prune::Tatami;
+mod prune;
+use prune::Tatami;
 
 mod queue;
 
@@ -15,22 +15,22 @@ fn main() {
         return;
     }
 
-        println!("Using {} bit integers.", mem::size_of_val(&SMAX) * 8);
-    //    println!("PNUM = {}", PR.len());
-    //    println!("FNUM = {}", FNUM);
-    //    println!("SMAX = {}", SMAX);
+    println!("Using {} bit integers.", mem::size_of_val(&SMAX) * 8);
+    println!("PNUM = {}", PR.len());
+    println!("FNUM = {}", FNUM);
+    println!("SMAX = {}", SMAX);
 
-    //    println!("Pr({})={}", PR.len(), PR.last().unwrap());
+    println!("Pr({})={}", PR.len(), PR.last().unwrap());
 
-    //    println!("Running Rust translation of prune.c...");
     if let Ok(n) = args[1].parse::<u32>() {
-        //        let mut tatami = Tatami::new();
-        //        match tatami.inv(n) {
-        //            Ok(result) => println!("T({})={}", result, n),
-        //            Err(e) => println!("{}", e),
-        //        }
+        println!("Running Rust translation of prune.c...");
+        let mut tatami = Tatami::new();
+        match tatami.inv(n) {
+            Ok(result) => println!("T({})={}", result, n),
+            Err(e) => println!("{}", e),
+        }
 
-        //        println!("Running Rust translation of queue.c...");
+        println!("Running Rust translation of queue.c...");
         let result = queue::tinv(n);
         println!("T({})={}", result, n)
     }
