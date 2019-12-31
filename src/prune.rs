@@ -4,8 +4,8 @@ use std::slice::Iter;
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
 pub struct Factors {
-    p: Vec<Int>,
-    n: Vec<Int>,
+    p: Vec<PrimeType>,
+    n: Vec<PrimeType>,
 }
 
 impl Factors {
@@ -18,11 +18,11 @@ impl Factors {
 }
 
 pub struct Tatami {
-    isn: Int,
+    isn: PrimeType,
     factors: Factors,
-    smin: Int,
-    z: Vec<Int>,
-    s: Int,
+    smin: PrimeType,
+    z: Vec<PrimeType>,
+    s: PrimeType,
     fmax: usize,
 }
 
@@ -38,14 +38,14 @@ impl Tatami {
         }
     }
 
-    fn free(&mut self, k: Int, l: Int) -> bool {
-        let n: Int = l / k;
-        let lmin: Int = (k + 1) * n + 2;
-        let lmax: Int = (k - 1) * (n + 1) - 2;
+    fn free(&mut self, k: PrimeType, l: PrimeType) -> bool {
+        let n = l / k;
+        let lmin = (k + 1) * n + 2;
+        let lmax = (k - 1) * (n + 1) - 2;
         (lmin <= l) && (l <= lmax)
     }
 
-    fn sigma(&mut self) -> Int {
+    fn sigma(&mut self) -> PrimeType {
         let mut r = self.factors.n[0];
         let fmax = self.fmax;
         for n in self.factors.n[1..=fmax].iter_mut() {
@@ -54,7 +54,7 @@ impl Tatami {
         r
     }
 
-    fn t(&mut self) -> Int {
+    fn t(&mut self) -> PrimeType {
         let mut r = 0;
         loop {
             let fmax = self.fmax;
@@ -84,13 +84,13 @@ impl Tatami {
             }
 
             if k <= l {
-                r += self.free(k, l) as Int;
+                r += self.free(k, l) as PrimeType;
             }
         }
         r
     }
 
-    fn work(&mut self, p: Int, mut pr: Iter<Int>) {
+    fn work(&mut self, p: PrimeType, mut pr: Iter<PrimeType>) {
         let s = self.s;
         let mut r = self.sigma();
         if r >= self.isn {
@@ -121,7 +121,7 @@ impl Tatami {
         self.factors.n[fmax] = 0;
     }
 
-    pub fn inv(&mut self, n: Int) -> Result<Int, TatamiError> {
+    pub fn inv(&mut self, n: PrimeType) -> Result<PrimeType, TatamiError> {
         self.isn = n;
         self.factors = Factors::new(FNUM);
         self.factors.p[0] = PR[0];

@@ -8,6 +8,8 @@ mod queue;
 
 include!(concat!(env!("OUT_DIR"), "/constants.rs"));
 
+use std::convert::TryInto;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
@@ -22,7 +24,7 @@ fn main() {
 
     println!("Pr({})={}", PR.len(), PR.last().unwrap());
 
-    if let Ok(n) = args[1].parse::<u32>() {
+    if let Ok(n) = args[1].parse::<PrimeType>() {
         println!("Running Rust translation of prune.c...");
         let mut tatami = Tatami::new();
         match tatami.inv(n) {
@@ -31,7 +33,7 @@ fn main() {
         }
 
         println!("Running Rust translation of queue.c...");
-        let result = queue::tinv(n);
+        let result = queue::tinv(n.try_into().unwrap()); 
         println!("T({})={}", result, n)
     }
 }
