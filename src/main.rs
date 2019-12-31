@@ -15,7 +15,7 @@ fn main() {
         return;
     }
 
-    //    println!("Using {} bit integers.", mem::size_of_val(&SMAX) * 8);
+        println!("Using {} bit integers.", mem::size_of_val(&SMAX) * 8);
     //    println!("PNUM = {}", PR.len());
     //    println!("FNUM = {}", FNUM);
     //    println!("SMAX = {}", SMAX);

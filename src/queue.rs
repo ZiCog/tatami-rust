@@ -4,8 +4,7 @@
 // Translated to C++, 2019 by Jean M. Cyr
 // Translated to Rust. 25th Dec 2019 by Heater.
 
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::atomic::{Ordering};
 
 use rayon::Scope;
 
@@ -84,7 +83,7 @@ fn t(xp: &mut Factors) -> u32 {
     r
 }
 
-fn twork<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU64) {
+fn twork<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicType) {
     // FIXME How to make 32 or 64 bit atomic?
     let fmax = xp.fmax;
     let mut smin = g_min.load(Ordering::Relaxed);
@@ -133,7 +132,7 @@ fn pow(base: f64, exponent: f64) -> f64 {
     base.powf(exponent)
 }
 
-fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU64, scope: &Scope<'scope>) {
+fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicType, scope: &Scope<'scope>) {
     // FIXME: How to make 32 / 64 bit atomic
     let fmax = xp.fmax;
     let mut smin = g_min.load(Ordering::Relaxed);
@@ -181,10 +180,9 @@ fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicU64, scope: 
     }
 }
 
-pub fn tinv(n: u32) -> u64 {
+pub fn tinv(n: u32) -> PrimeType {
     let mut x = Factors::new();
-    //let g_min = AtomicU32::new(SMAX);
-    let g_min = AtomicU64::new(SMAX);
+    let g_min = AtomicType::new(SMAX);
 
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(32)
