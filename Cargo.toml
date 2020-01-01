@@ -19,5 +19,9 @@ num = "0.2"
 use_u64 = []
 use_u32 = []
 
+# Selected serial or threaded 
+serial = []
+threaded = []
+
 [profile.release]
 #overflow-checks = true

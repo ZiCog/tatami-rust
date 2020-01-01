@@ -44,16 +44,15 @@ fn main() {
 
     if mem::size_of_val(&SMAX) == 4 {
         f.write_all(b"use std::sync::atomic::AtomicU32;\n").unwrap();
-        f.write_all(b"type Int = u32;\n").unwrap();
+//        f.write_all(b"type Int = u32;\n").unwrap();
         f.write_all(b"type PrimeType = u32;\n").unwrap();
         f.write_all(b"type AtomicType = AtomicU32;\n").unwrap();
     } else {
         f.write_all(b"use std::sync::atomic::AtomicU64;\n").unwrap();
-        f.write_all(b"type Int = i64;\n").unwrap();
+//        f.write_all(b"type Int = i64;\n").unwrap();
         f.write_all(b"type PrimeType = u64;\n").unwrap();
         f.write_all(b"type AtomicType = AtomicU64;\n").unwrap();
     }
-
 
     f.write_all(b"#[allow(clippy::unreadable_literal)]\n")
         .unwrap();
