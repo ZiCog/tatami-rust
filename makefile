@@ -10,7 +10,7 @@ run: all
 all: prune limited queue target/release/tatami_rust
 
 target/release/tatami_rust: Cargo.toml build.rs primes.rs  
-	RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
+	RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_u32 --features=serial
 
 prune: prune.c
 	$(CC) -Wall -O3 -o prune prune.c -march=native -mtune=native
