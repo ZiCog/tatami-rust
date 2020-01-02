@@ -9,10 +9,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if !defined(T_S)
+#define T_S 1000
+#endif
+
+#if T_S == 200
 #define smax 100000000l
 #define Pnum 1300
-//#define smax 100000000000l
-//#define Pnum 40000
+#elif T_S == 1000
+#define smax 100000000000l
+#define Pnum 40000
+#else
+#error "T_S unsupported"
+#endif
 
 #define fnum 20
 
@@ -139,8 +148,8 @@ static long Tinv(n) int n; {
     return smin<smax?smin:-1;
 }
 int main(){
-//    int n=1000;
-    int n=200;
+    int n=1000;
+//    int n=200;
     doinit();
     printf("Pr(%d)=%ld\n",Pnum,P[Pnum-1]);
     printf("T(%ld)=%d\n",Tinv(n),n);

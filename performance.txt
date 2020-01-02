@@ -1,11 +1,34 @@
-On Pi 3B
---------
+-------------------------------
+Linux monster 4.4.0-17134-Microsoft #706-Microsoft Mon Apr 01 18:13:00 PST 2019 x86_64 GNU/Linux
+-------------------------------
+prune64
+Pr(40000)=479909
+T(63405342000)=1000
 
-                    32 bit      64 bit
-Serial (prune)      4.0         15.4           
-Threaded (queue)    1.4          4.7
+real    4m44.687s
+user    4m44.125s
+sys     0m0.000s
+-------------------------------
+pqplum64
+T(63405342000)=1000
 
-On x86_64
----------
-Serial (prune)      0.65         2.3
-Threaded (queue)    0.28         0.65
+real    2m5.956s
+user    14m5.219s
+sys     0m0.219s
+-------------------------------
+tatami_rust_threaded64
+Using 64 bit integers.
+PNUM = 40000
+FNUM = 20
+SMAX = 100000000000
+Pr(40000)=479909
+Running Rust translation of queue.c...
+T(63405342000)=1000
+
+real    1m31.995s
+user    11m38.203s
+sys     0m0.609s
+-------------------------------
+
+
+
