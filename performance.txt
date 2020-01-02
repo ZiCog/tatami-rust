@@ -31,4 +31,38 @@ sys     0m0.609s
 -------------------------------
 
 
+-------------------------------
+Linux debian-buster-64 4.19.75-v8+ #1270 SMP PREEMPT Tue Sep 24 18:59:17 BST 2019 aarch64 GNU/Linux
+-------------------------------
+prune64
+Pr(40000)=479909
+T(63405342000)=1000
+
+real    19m45.856s
+user    19m45.730s
+sys     0m0.017s
+-------------------------------
+pqplum64
+./run64.sh: line 12: 17577 Segmentation fault      ./pqplum64
+
+real    0m0.229s
+user    0m0.405s
+sys     0m0.117s
+-------------------------------
+tatami_rust_threaded64
+Using 64 bit integers.
+PNUM = 40000
+FNUM = 20
+SMAX = 100000000000
+Pr(40000)=479909
+Running Rust translation of queue.c...
+T(63405342000)=1000
+
+real    24m26.536s
+user    94m17.510s
+sys     0m14.743s
+-------------------------------
+
+
+
 
