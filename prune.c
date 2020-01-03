@@ -16,14 +16,15 @@
 #if T_S == 200
 #define smax 100000000l
 #define Pnum 1300
+#define fnum 10
 #elif T_S == 1000
 #define smax 100000000000l
 #define Pnum 40000
+#define fnum 20
 #else
 #error "T_S unsupported"
 #endif
 
-#define fnum 20
 
 
 typedef struct { long s; int fmax,i; long p[fnum]; char n[fnum]; } factors;
@@ -148,8 +149,7 @@ static long Tinv(n) int n; {
     return smin<smax?smin:-1;
 }
 int main(){
-    int n=1000;
-//    int n=200;
+    int n=T_S;
     doinit();
     printf("Pr(%d)=%ld\n",Pnum,P[Pnum-1]);
     printf("T(%ld)=%d\n",Tinv(n),n);
