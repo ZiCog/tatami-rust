@@ -12,7 +12,7 @@ echo "pqplum32 (C + pthreads)"
 time ./pqplum32
 
 echo "-------------------------------"
-echo "tatami_rust_threaded64 (Rust + rayon)"
+echo "tatami_rust_threaded32 (Rust + rayon)"
 time ./tatami_rust_threaded32 200
 
 echo "-------------------------------"
