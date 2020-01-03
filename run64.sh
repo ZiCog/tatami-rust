@@ -4,15 +4,15 @@ echo "-------------------------------"
 uname -a
 
 echo "-------------------------------"
-echo "prune64.c"
+echo "prune64 (C)"
 time ./prune64
 
 echo "-------------------------------"
-echo "pqplum64.c"
+echo "pqplum64 (C + pthreads)"
 time ./pqplum64
 
 echo "-------------------------------"
-echo "tatami_rust_threaded64.rs"
+echo "tatami_rust_threaded64 (Rust + rayon)"
 time ./tatami_rust_threaded64 1000
 
 echo "-------------------------------"
