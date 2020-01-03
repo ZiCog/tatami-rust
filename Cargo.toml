@@ -10,6 +10,7 @@ build = "build.rs"
 [dependencies]
 time = "*"
 rayon = "*"
+num_cpus = "*"
 
 [build-dependencies]
 num = "0.2"
