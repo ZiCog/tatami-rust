@@ -1,5 +1,5 @@
-CC=clang
-CPP=clang++
+CC=gcc
+CPP=g++
 
 RUST_SOURCES=build.rs defs.rs primes.rs src/error.rs src/main.rs src/prune.rs src/queue.rs
 
