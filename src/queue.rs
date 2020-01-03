@@ -4,7 +4,7 @@
 // Translated to C++, 2019 by Jean M. Cyr
 // Translated to Rust. 25th Dec 2019 by Heater.
 
-use std::sync::atomic::{Ordering};
+use std::sync::atomic::Ordering;
 
 use rayon::Scope;
 
@@ -84,24 +84,18 @@ fn t(xp: &mut Factors) -> u32 {
 }
 
 fn twork<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicType) {
-    // FIXME How to make 32 or 64 bit atomic?
     let fmax = xp.fmax;
     let mut smin = g_min.load(Ordering::Relaxed);
     let s = xp.s;
     let p_max = smin / s + 1;
     let p = PR[xp.i];
     if p <= p_max {
-        let mut r: u32;
         xp.n[fmax] += 1;
         xp.s = s * p;
-        r = sigma(xp);
-        if r >= tisn {
-            r = t(xp);
-            if r == tisn {
-                while xp.s < smin {
-                    g_min.compare_and_swap(smin, xp.s, Ordering::Relaxed);
-                    smin = g_min.load(Ordering::Relaxed);
-                }
+        if sigma(xp) >= tisn && t(xp) == tisn {
+            while xp.s < smin {
+                g_min.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                smin = g_min.load(Ordering::Relaxed);
             }
         }
         twork(xp, tisn, g_min);
@@ -133,7 +127,6 @@ fn pow(base: f64, exponent: f64) -> f64 {
 }
 
 fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicType, scope: &Scope<'scope>) {
-    // FIXME: How to make 32 / 64 bit atomic
     let fmax = xp.fmax;
     let mut smin = g_min.load(Ordering::Relaxed);
     let s = xp.s;
@@ -152,14 +145,10 @@ fn tqueue<'scope>(xp: &mut Factors, tisn: u32, g_min: &'scope AtomicType, scope:
         }
         xp.n[fmax] += 1;
         xp.s = s * p;
-        r = sigma(xp);
-        if r >= tisn {
-            r = t(xp);
-            if r == tisn {
-                while xp.s < smin {
-                    g_min.compare_and_swap(smin, xp.s, Ordering::Relaxed);
-                    smin = g_min.load(Ordering::Relaxed);
-                }
+        if sigma(xp) >= tisn && t(xp) == tisn {
+            while xp.s < smin {
+                g_min.compare_and_swap(smin, xp.s, Ordering::Relaxed);
+                smin = g_min.load(Ordering::Relaxed);
             }
         }
         tqueue(xp, tisn, g_min, scope);

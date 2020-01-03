@@ -15,4 +15,3 @@ pub mod defs {
     pub const SMAX: Int = 100_000_000_000;
     pub const FNUM: usize = 20;
 }
-

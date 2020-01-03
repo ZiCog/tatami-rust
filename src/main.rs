@@ -18,7 +18,7 @@ use std::convert::TryInto;
 #[cfg(feature = "threaded")]
 fn do_it(n: PrimeType) {
     println!("Running Rust translation of queue.c...");
-    let result = queue::tinv(n.try_into().unwrap()); 
+    let result = queue::tinv(n.try_into().unwrap());
     println!("T({})={}", result, n)
 }
 

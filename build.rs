@@ -41,7 +41,6 @@ fn main() {
     let dest_path = Path::new(&out_dir).join("constants.rs");
     let mut f = File::create(&dest_path).unwrap();
 
-
     if mem::size_of_val(&SMAX) == 4 {
         f.write_all(b"use std::sync::atomic::AtomicU32;\n").unwrap();
         f.write_all(b"type PrimeType = u32;\n").unwrap();
