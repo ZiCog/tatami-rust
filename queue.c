@@ -228,6 +228,7 @@ int main(){
     //int n=200;
     int n=1000;
     nwork=2*get_ncpu();
+    printf("Using %d threads.\n", nwork);
     doinit();
     printf("Pr(%d)=%ld\n",Pnum,P[Pnum-1]);
     workers(nwork){
