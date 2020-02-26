@@ -7,11 +7,11 @@ This program can be built to use 32 or 64 bit integers. A trade off between perf
 
 Use: 
 
-    $ RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
+    $ RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_u32
 
 Or:
 
-    $ RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_i32
+    $ RUSTFLAGS="-C opt-level=3 -C debuginfo=0 -C target-cpu=native" cargo build --release --features=use_u32
 
 There is a make file to build and time the Rust and the C versions it is derived from:
 
