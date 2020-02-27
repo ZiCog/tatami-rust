@@ -65,4 +65,101 @@ sys     0m14.743s
 
 
 
+$ ./run64.sh
+-------------------------------
+Linux jetson-nano 4.9.140-tegra #1 SMP PREEMPT Mon Dec 9 22:47:42 PST 2019 aarch64 aarch64 aarch64 GNU/Linux
+-------------------------------
+prune64 (C)
+Pr(40000)=479909
+T(63405342000)=1000
+
+real    10m23,920s
+user    10m22,572s
+sys     0m0,008s
+-------------------------------
+pqplum64 (C + pthreads)
+T(63405342000)=1000
+
+real    3m54,023s
+user    14m7,240s
+sys     0m0,148s
+-------------------------------
+tatami_rust_serial64 (Rust)
+Using 64 bit integers.
+PNUM = 40000
+FNUM = 20
+SMAX = 100000000000
+Pr(40000)=479909
+Running Rust translation of prune.c...
+T(63405342000)=1000
+
+real    10m6,144s
+user    10m5,060s
+sys     0m0,000s
+-------------------------------
+tatami_rust_threaded64 (Rust + rayon)
+Using 64 bit integers.
+PNUM = 40000
+FNUM = 20
+SMAX = 100000000000
+Pr(40000)=479909
+Running Rust translation of queue.c...
+Uing 4 cores.
+T(63405342000)=1000
+
+real    6m33,026s
+user    25m32,012s
+sys     0m0,668s
+-------------------------------
+
+
+
+
+$ ./run32.sh
+-------------------------------
+Linux jetson-nano 4.9.140-tegra #1 SMP PREEMPT Mon Dec 9 22:47:42 PST 2019 aarch64 aarch64 aarch64 GNU/Linux
+-------------------------------
+prune32 (C)
+Pr(1300)=10657
+T(85765680)=200
+
+real    0m2,533s
+user    0m2,528s
+sys     0m0,000s
+-------------------------------
+pqplum32 (C + pthreads)
+T(85765680)=200
+
+real    0m0,512s
+user    0m1,912s
+sys     0m0,000s
+-------------------------------
+tatami_rust_serial32 (Rust)
+Using 32 bit integers.
+PNUM = 1300
+FNUM = 10
+SMAX = 100000000
+Pr(1300)=10657
+Running Rust translation of prune.c...
+T(85765680)=200
+
+real    0m2,165s
+user    0m2,156s
+sys     0m0,000s
+-------------------------------
+tatami_rust_threaded32 (Rust + rayon)
+Using 32 bit integers.
+PNUM = 1300
+FNUM = 10
+SMAX = 100000000
+Pr(1300)=10657
+Running Rust translation of queue.c...
+Uing 4 cores.
+T(85765680)=200
+
+real    0m0,632s
+user    0m2,376s
+sys     0m0,000s
+-------------------------------
+
 

@@ -174,7 +174,7 @@ pub fn tinv(n: u32) -> PrimeType {
     let g_min = AtomicType::new(SMAX);
 
     let cpus = num_cpus::get();
-    println!("Uing {} cores.", cpus);
+    println!("Using {} cores.", cpus);
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(cpus)
         .stack_size(4 * 1000_000)
